@@ -95,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                         lat = (float) addresses.get(0).getLatitude();
-                        lon = (float) addresses.get(0).getLongitude();;
+                        lon = (float) addresses.get(0).getLongitude();
+                        response();
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -115,13 +116,15 @@ public class MainActivity extends AppCompatActivity {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        response();
+
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         checkPermission();
+
 
     }
 
     private void response(){
+        System.out.println(lat+" "+lon);
             RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
                 @Override
                 public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
