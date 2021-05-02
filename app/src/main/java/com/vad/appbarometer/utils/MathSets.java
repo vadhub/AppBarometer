@@ -2,9 +2,9 @@ package com.vad.appbarometer.utils;
 
 public class MathSets {
 
-    private final static int STANDART_GRAD = 10;
+    public final static int STANDART_GRAD = 10;
 
-    private static float getGradus(float pressure){
+    public static float getGradus(float pressure){
         float v = 0;
         float coef = 3;
         if(pressure>1000){

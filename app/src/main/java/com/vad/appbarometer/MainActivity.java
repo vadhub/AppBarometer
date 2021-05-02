@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,26 +13,26 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
+import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
+import com.vad.appbarometer.utils.MathSets;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
             float[] values = sensorEvent.values;
-            mBarText.setText(String.format("%.2f mBar", values[0]));
             tempPressure = values[0];
+            mBarText.setText(String.format("%.2f mBar", tempPressure));
+            imageViewArrow.setRotation(MathSets.getGradus(tempPressure));
+
         }
 
         @Override
@@ -114,19 +115,28 @@ public class MainActivity extends AppCompatActivity {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        response();
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         checkPermission();
-        response();
 
     }
 
     private void response(){
-        try {
-            float pressure = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).execute().body().getMain().getPressure();
-            System.out.println(pressure);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
+                @Override
+                public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
+                    if(response.body()!=null){
+                        float pressure = response.body().getMain().getPressure();
+                        System.out.println(pressure);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<WeatherPojo> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                    System.out.println(t.getMessage());
+                }
+            });
     }
 
     @Override
