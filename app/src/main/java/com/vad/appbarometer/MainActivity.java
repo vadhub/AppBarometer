@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)&&(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            new AlertDialog.Builder(this).setTitle("Permission Requires").setMessage("Permission ACCESS_FINE_LOCATION")
+            new AlertDialog.Builder(this).setTitle("Permission Requires").setMessage("Permission ACCESS FINE LOCATION")
                     .setPositiveButton("Granted", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -88,14 +88,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }else{
             displayLocationSettingsRequest(this, MainActivity.this);
         }
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+                displayLocationSettingsRequest(this, MainActivity.this);
             } else {
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
             }
@@ -165,10 +164,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             response((float) location.getLatitude(),(float) location.getLongitude());
         }
 
-        if(mlocationManager!=null){
-            mlocationManager.removeUpdates(this);
-        }
-
     }
 
 
@@ -236,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @SuppressLint("MissingPermission")
     private void setLocationSetting(){
-        Toast.makeText(this, "access", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "access", Toast.LENGTH_SHORT).show();
         mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
     }
