@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public static final String API_KEY = "e19089086c20c76bdc3bfbbe2a6ad29c";
     private static final int REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION = 1043;
 
-
     private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
@@ -101,8 +100,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (requestCode == REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 displayLocationSettingsRequest(this, MainActivity.this);
-            } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -129,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void visionPreasure(float pres){
-        mBarText.setText(String.format("%.2f mBar", pres));
+        mBarText.setText(String.format("%.2f hPa", pres));
         AnimationSet animationSet = animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
     }
@@ -171,6 +168,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onLocationChanged(@NonNull Location location) {
         if(location!=null){
             response((float) location.getLatitude(),(float) location.getLongitude());
+        }
+
+        if(mlocationManager!=null){
+            mlocationManager.removeUpdates(this);
         }
     }
 
