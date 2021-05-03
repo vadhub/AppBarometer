@@ -50,7 +50,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private SensorManager sensorManager;
     private Sensor pressureSensor;
     private ImageView imageViewArrow;
+    private ImageView imageViewGauge;
     private LocationManager mlocationManager;
+
+    private boolean isActive = false;
 
     public static final int REQUEST_CHECK_SETTINGS = 1209;
     public static final String API_KEY = "e19089086c20c76bdc3bfbbe2a6ad29c";
@@ -111,13 +114,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
+        imageViewGauge = (ImageView) findViewById(R.id.imageView);
+
+        activeGauge(imageViewArrow);
+        activeGauge(imageViewGauge);
 
         if(pressureSensor==null){
             checkPermission();
         }
-
     }
 
     private void visionPreasure(float pres){
@@ -163,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if(location!=null){
             response((float) location.getLatitude(),(float) location.getLongitude());
         }
-
     }
 
 
@@ -234,5 +238,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         //Toast.makeText(this, "access", Toast.LENGTH_SHORT).show();
         mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
+        isActive = true;
+    }
+
+    private void activeGauge(ImageView imageView){
+        if(isActive){
+            imageView.setImageAlpha(255);
+        }else{
+            imageView.setImageAlpha(100);
+        }
     }
 }
