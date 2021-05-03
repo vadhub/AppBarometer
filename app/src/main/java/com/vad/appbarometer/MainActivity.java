@@ -23,6 +23,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -127,7 +130,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void visionPreasure(float pres){
         mBarText.setText(String.format("%.2f mBar", pres));
-        imageViewArrow.setRotation(MathSets.getGradus(pres));
+        AnimationSet animationSet = animationRotate(MathSets.getGradus(pres));
+        imageViewArrow.startAnimation(animationSet);
     }
 
     private void response(float lat, float lon){
@@ -239,6 +243,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
         isActive = true;
+        activeGauge(imageViewGauge);
+        activeGauge(imageViewArrow);
     }
 
     private void activeGauge(ImageView imageView){
@@ -247,5 +253,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }else{
             imageView.setImageAlpha(100);
         }
+    }
+
+    private AnimationSet animationRotate(float degrees){
+        AnimationSet animSet = new AnimationSet(true);
+        animSet.setInterpolator(new DecelerateInterpolator());
+        animSet.setFillAfter(true);
+        animSet.setFillEnabled(true);
+
+        final RotateAnimation animRotate = new RotateAnimation(0.0f, degrees,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+        animRotate.setDuration(1500);
+        animRotate.setFillAfter(true);
+        animSet.addAnimation(animRotate);
+
+        return animSet;
     }
 }
