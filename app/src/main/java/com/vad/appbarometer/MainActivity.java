@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private LocationManager mlocationManager;
-    private Handler hendler;
 
     private boolean isActive = false;
 
@@ -170,16 +169,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         if(location!=null){
-            hendler = new Handler(new Handler.Callback() {
+            new Thread(new Runnable() {
                 @Override
-                public boolean handleMessage(@NonNull Message message) {
+                public void run() {
                     response((float) location.getLatitude(),(float) location.getLongitude());
                     isActive = true;
                     activeGauge(imageViewGauge);
                     activeGauge(imageViewArrow);
-                    return false;
                 }
-            });
+            }).start();
+
         }
 
         if(mlocationManager!=null){
