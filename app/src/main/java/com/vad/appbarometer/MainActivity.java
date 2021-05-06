@@ -25,10 +25,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private Sensor pressureSensor;
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
+    private ProgressBar progressBar;
     private LocationManager mlocationManager;
 
     private boolean isActive = false;
@@ -118,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         activeGauge(imageViewArrow);
         activeGauge(imageViewGauge);
@@ -173,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 @Override
                 public void run() {
                     response((float) location.getLatitude(),(float) location.getLongitude());
+                    progressBar.setVisibility(View.INVISIBLE);
                     isActive = true;
                     activeGauge(imageViewGauge);
                     activeGauge(imageViewArrow);
