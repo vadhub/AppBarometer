@@ -34,6 +34,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -60,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
     private LocationManager mlocationManager;
+
+    private AdView mAdView;
 
     private boolean isActive = false;
 
@@ -114,6 +121,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+
+            }
+        });
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
 
         mBarText = (TextView) findViewById(R.id.mBarText);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
