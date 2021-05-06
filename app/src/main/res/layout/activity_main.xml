@@ -14,6 +14,7 @@
         android:layout_marginBottom="24dp"
         android:text="1000 hPa"
         android:textSize="36sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

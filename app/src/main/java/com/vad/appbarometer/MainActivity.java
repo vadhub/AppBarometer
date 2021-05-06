@@ -23,6 +23,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private LocationManager mlocationManager;
+    private Handler hendler;
 
     private boolean isActive = false;
 
@@ -167,7 +170,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         if(location!=null){
-            response((float) location.getLatitude(),(float) location.getLongitude());
+            hendler = new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(@NonNull Message message) {
+                    response((float) location.getLatitude(),(float) location.getLongitude());
+                    isActive = true;
+                    activeGauge(imageViewGauge);
+                    activeGauge(imageViewArrow);
+                    return false;
+                }
+            });
         }
 
         if(mlocationManager!=null){
@@ -243,9 +255,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         //Toast.makeText(this, "access", Toast.LENGTH_SHORT).show();
         mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
-        isActive = true;
-        activeGauge(imageViewGauge);
-        activeGauge(imageViewArrow);
     }
 
     private void activeGauge(ImageView imageView){
