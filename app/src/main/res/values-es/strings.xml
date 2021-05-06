@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AppBarometer</string>
+    <string name="permission_name">Permiso requerido</string>
+    <string name="permission_ok" >Ok</string>
+    <string name="permission_deny">No</string>
+    <string name="permission_message_body">Permitir el acceso a geodatos</string>
+    <string name="meter_name">hPa</string>
+    <string name="default_meter_name">1000 hPa</string>
+</resources>

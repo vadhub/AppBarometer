@@ -89,14 +89,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)&&(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            new AlertDialog.Builder(this).setTitle("Permission Requires").setMessage("Permission ACCESS FINE LOCATION")
-                    .setPositiveButton("Granted", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.permission_name)).setMessage(getResources().getString(R.string.permission_deny))
+                    .setPositiveButton(getResources().getString(R.string.permission_ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
                             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
                         }
-                    }).setNegativeButton("Deny", new DialogInterface.OnClickListener() {
+                    }).setNegativeButton(getResources().getString(R.string.permission_deny), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void visionPreasure(float pres){
-        mBarText.setText(String.format("%.2f hPa", pres));
+        mBarText.setText(String.format("%.2f "+getResources().getString(R.string.meter_name), pres));
         AnimationSet animationSet = animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
     }

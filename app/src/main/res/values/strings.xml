@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">AppBarometer</string>
+    <string name="permission_message_body">Allow access to geodata</string>
+    <string name="permission_deny">Deny</string>
+    <string name="permission_ok">Granted</string>
+    <string name="permission_name">Permission required</string>
+    <string name="meter_name">hPa</string>
+    <string name="default_meter_name">1000 hPa</string>
 </resources>

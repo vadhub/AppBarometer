@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Барометр</string>
+    <string name="permission_name">Требуется разрешение</string>
+    <string name="permission_ok">Ок</string>
+    <string name="permission_deny">Нет</string>
+    <string name="permission_message_body">Разрешить доступ к геоданным</string>
+    <string name="meter_name">гПа</string>
+    <string name="default_meter_name">1000 гПа</string>
+</resources>
