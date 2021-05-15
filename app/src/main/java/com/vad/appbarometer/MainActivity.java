@@ -77,8 +77,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            float[] values = sensorEvent.values;
-            visionPreasure(values[0]);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    float[] values = sensorEvent.values;
+                    visionPreasure(values[0]);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    isActive = true;
+                    activeGauge(imageViewGauge);
+                    activeGauge(imageViewArrow);
+                }
+            }).start();
+
+            sensorEventListener = null;
         }
 
         @Override
@@ -89,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)&&(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.permission_name)).setMessage(getResources().getString(R.string.permission_deny))
+            new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.permission_name)).setMessage(getResources().getString(R.string.permission_message_body))
                     .setPositiveButton(getResources().getString(R.string.permission_ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -148,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if(pressureSensor==null){
             checkPermission();
         }
+
     }
 
     private void visionPreasure(float pres){
@@ -162,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
                     if(response.body()!=null){
                         float pressure = response.body().getMain().getPressure();
+                        Toast.makeText(MainActivity.this, ""+pressure, Toast.LENGTH_SHORT).show();
                         visionPreasure(pressure);
                     }
                 }
@@ -275,7 +288,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @SuppressLint("MissingPermission")
     private void setLocationSetting(){
-        //Toast.makeText(this, "access", Toast.LENGTH_SHORT).show();
         mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
     }
