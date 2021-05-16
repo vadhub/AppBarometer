@@ -45,6 +45,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <ProgressBar
+        android:id="@+id/progressBarForTextView"
+        android:theme="@style/CircularProgress"
+        android:alpha="0.6"
+        android:visibility="visible"
+        android:indeterminateOnly="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/mBarText"
+        app:layout_constraintEnd_toEndOf="@id/mBarText"
+        app:layout_constraintStart_toStartOf="@id/mBarText"
+        app:layout_constraintTop_toTopOf="@id/mBarText" />
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
@@ -63,7 +77,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="@string/default_meter_name"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/adView"

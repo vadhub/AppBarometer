@@ -4,8 +4,9 @@
     <string name="permission_deny">Deny</string>
     <string name="permission_ok">Granted</string>
     <string name="permission_name">Permission required</string>
-    <string name="meter_name">hPa</string>
-    <string name="default_meter_name">1000 hPa</string>
-    <string name="default_meter_name_mmHg">1000 mmHg</string>
-    <string name="meter_name_mmHg">mmHg</string>
+
+    <string-array name="bar">
+        <item>hPa</item>
+        <item>mmHg</item>
+    </string-array>
 </resources>

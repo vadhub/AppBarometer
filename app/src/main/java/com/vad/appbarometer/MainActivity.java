@@ -29,8 +29,11 @@ import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,7 +68,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
     private LocationManager mlocationManager;
+    private String[] barChange;
 
+    private Spinner spinnerBar;
+    private String changMBar;
+    private ProgressBar progressBarForTextView;
 
     private AdView mAdView;
 
@@ -88,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             float[] values = sensorEvent.values;
                             visionPreasure(values[0]);
                             progressBar.setVisibility(View.INVISIBLE);
+                            progressBarForTextView.setVisibility(View.INVISIBLE);
                             isActive = true;
                             activeGauge(imageViewGauge);
                             activeGauge(imageViewArrow);
@@ -153,7 +161,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        barChange = getResources().getStringArray(R.array.bar);
+        spinnerBar = (Spinner) findViewById(R.id.spinnerChangeMeter);
 
+        //adapter for spinner
+        ArrayAdapter<?> adapter =ArrayAdapter.createFromResource(this, R.array.bar, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerBar.setAdapter(adapter);
         mBarText = (TextView) findViewById(R.id.mBarText);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -161,7 +175,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBarForTextView = (ProgressBar) findViewById(R.id.progressBarForTextView);
 
+        //update data arrow and gauge
         activeGauge(imageViewArrow);
         activeGauge(imageViewGauge);
 
@@ -172,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void visionPreasure(float pres){
-        mBarText.setText(String.format("%.2f "+getResources().getString(R.string.meter_name), pres));
+        mBarText.setText(String.format("%.2f "+changMBar, pres));
         AnimationSet animationSet = animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
     }
@@ -218,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 public void run() {
                     response((float) location.getLatitude(),(float) location.getLongitude());
                     progressBar.setVisibility(View.INVISIBLE);
+                    progressBarForTextView.setVisibility(View.INVISIBLE);
                     isActive = true;
                     activeGauge(imageViewGauge);
                     activeGauge(imageViewArrow);
