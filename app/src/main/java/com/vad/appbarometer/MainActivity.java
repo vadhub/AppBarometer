@@ -80,21 +80,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    float[] values = sensorEvent.values;
-                    visionPreasure(values[0]);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    isActive = true;
-                    activeGauge(imageViewGauge);
-                    activeGauge(imageViewArrow);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            float[] values = sensorEvent.values;
+                            visionPreasure(values[0]);
+                            progressBar.setVisibility(View.INVISIBLE);
+                            isActive = true;
+                            activeGauge(imageViewGauge);
+                            activeGauge(imageViewArrow);
+
+                            sensorManager.unregisterListener(sensorEventListener);
+                            sensorEventListener=null;
+                        }
+                    });
+
                 }
             }).start();
 
-            sensorEventListener = null;
+
         }
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int i) {
-
         }
     };
 
