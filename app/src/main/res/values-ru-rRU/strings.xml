@@ -7,4 +7,6 @@
     <string name="permission_message_body">Разрешить доступ к геоданным</string>
     <string name="meter_name">гПа</string>
     <string name="default_meter_name">1000 гПа</string>
+    <string name="default_meter_name_mmHg">1000 мм рс. ст.</string>
+    <string name="meter_name_mmHg">мм рс. ст.</string>
 </resources>

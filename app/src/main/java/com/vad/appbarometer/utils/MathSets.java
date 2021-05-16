@@ -16,5 +16,9 @@ public class MathSets {
         return v;
     }
 
+    public static float convertToMmHg(float gPa){
+        return (float) (gPa/1.333);
+    }
+
 
 }

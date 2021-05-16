@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ProgressBar progressBar;
     private LocationManager mlocationManager;
 
+
     private AdView mAdView;
 
     private boolean isActive = false;
@@ -98,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 }
             }).start();
-
 
         }
 
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         mBarText = (TextView) findViewById(R.id.mBarText);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        pressureSensor = null;//sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
                     if(response.body()!=null){
                         float pressure = response.body().getMain().getPressure();
-                        Toast.makeText(MainActivity.this, ""+pressure, Toast.LENGTH_SHORT).show();
                         visionPreasure(pressure);
                     }
                 }
