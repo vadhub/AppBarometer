@@ -59,6 +59,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.vad.appbarometer.R.drawable.guage;
+
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     private TextView mBarText;
@@ -163,13 +165,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         ArrayAdapter<?> adapter =ArrayAdapter.createFromResource(this, R.array.bar, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBar.setAdapter(adapter);
+
         mBarText = (TextView) findViewById(R.id.mBarText);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         barChange = getResources().getStringArray(R.array.bar);
         changMBar = barChange[0];
-
-        Toast.makeText(this, ""+spinnerBar.getSelectedItemId(), Toast.LENGTH_SHORT).show();
 
         spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -177,8 +178,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 changMBar = barChange[i];
                 if(i==0){
                     visionPreasure(sensorValue);
+                    imageViewGauge.setImageDrawable(getDrawable(guage));
                 }else{
                     visionPreasure(MathSets.convertToMmHg(sensorValue));
+                    imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
                 }
             }
 
@@ -189,14 +192,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
 
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBarForTextView = (ProgressBar) findViewById(R.id.progressBarForTextView);
 
         //update data arrow and gauge
-        activeGauge(imageViewArrow);
-        activeGauge(imageViewGauge);
+        activeGauge(imageViewArrow, true);
+        activeGauge(imageViewGauge, false);
 
         if(pressureSensor==null){
             checkPermission();
@@ -228,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             });
     }
-
 
 
     @Override
@@ -333,11 +336,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     //set alpha image
-    private void activeGauge(ImageView imageView){
+    private void activeGauge(ImageView imageView, boolean isArrow){
         if(isActive){
             imageView.setImageAlpha(255);
         }else{
-            imageView.setImageAlpha(100);
+            if(isArrow){
+                imageView.setImageAlpha(0);
+            }else{
+                imageView.setImageAlpha(100);
+            }
         }
     }
 
@@ -365,8 +372,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         progressBar.setVisibility(View.INVISIBLE);
         progressBarForTextView.setVisibility(View.INVISIBLE);
         isActive = true;
-        activeGauge(imageViewGauge);
-        activeGauge(imageViewArrow);
+        activeGauge(imageViewGauge, false);
+        activeGauge(imageViewArrow, true);
     }
 
     //visible guage and arrow
@@ -374,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         progressBar.setVisibility(View.INVISIBLE);
         progressBarForTextView.setVisibility(View.INVISIBLE);
         isActive = true;
-        activeGauge(imageViewGauge);
-        activeGauge(imageViewArrow);
+        activeGauge(imageViewGauge, false);
+        activeGauge(imageViewArrow, true);
     }
 }
