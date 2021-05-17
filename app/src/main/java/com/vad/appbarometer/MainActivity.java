@@ -19,11 +19,15 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 
+import android.os.Looper;
+import android.provider.Settings;
 import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
@@ -46,14 +50,23 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.MathSets;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,7 +74,7 @@ import retrofit2.Response;
 
 import static com.vad.appbarometer.R.drawable.guage;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity {
 
     private TextView mBarText;
     private SensorManager sensorManager;
@@ -69,11 +82,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
-    private LocationManager mlocationManager;
+    private LocationManager mLocationManager;
     private Spinner spinnerBar;
     private String changMBar;
-    private ProgressBar progressBarForTextView;
     private float sensorValue;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private AdView mAdView;
     private String[] barChange;
@@ -99,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             setPressure(values);
 
                             sensorManager.unregisterListener(sensorEventListener);
-                            sensorEventListener=null;
+                            sensorEventListener = null;
                         }
                     });
 
@@ -114,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     };
 
     private void checkPermission() {
-        if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)&&(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+        if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.permission_name)).setMessage(getResources().getString(R.string.permission_message_body))
                     .setPositiveButton(getResources().getString(R.string.permission_ok), new DialogInterface.OnClickListener() {
                         @Override
@@ -128,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     dialog.dismiss();
                 }
             }).show();
-        }else{
+        } else {
             displayLocationSettingsRequest(this, MainActivity.this);
         }
     }
@@ -162,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         spinnerBar = (Spinner) findViewById(R.id.spinnerChangeMeter);
 
         //adapter for spinner
-        ArrayAdapter<?> adapter =ArrayAdapter.createFromResource(this, R.array.bar, android.R.layout.simple_spinner_item);
+        ArrayAdapter<?> adapter = ArrayAdapter.createFromResource(this, R.array.bar, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBar.setAdapter(adapter);
 
@@ -176,10 +190,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 changMBar = barChange[i];
-                if(i==0){
+                if (i == 0) {
                     visionPreasure(sensorValue);
                     imageViewGauge.setImageDrawable(getDrawable(guage));
-                }else{
+                } else {
                     visionPreasure(MathSets.convertToMmHg(sensorValue));
                     imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
                 }
@@ -191,53 +205,54 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
-        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        pressureSensor = null;//sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBarForTextView = (ProgressBar) findViewById(R.id.progressBarForTextView);
 
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
 
-        if(pressureSensor==null){
+        if (pressureSensor == null) {
             checkPermission();
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         }
 
     }
 
-    private void visionPreasure(float pres){
-        mBarText.setText(String.format("%.2f "+changMBar, pres));
+    private void visionPreasure(float pres) {
+        mBarText.setText(String.format("%.2f " + changMBar, pres));
 
         AnimationSet animationSet = animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
     }
 
-    private void response(float lat, float lon){
-            RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
-                @Override
-                public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
-                    if(response.body()!=null){
-                        float pressure = response.body().getMain().getPressure();
-                        sensorValue = pressure;
-                        visionPreasure(pressure);
-                    }
+    private void response(float lat, float lon) {
+        RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
+            @Override
+            public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
+                if (response.body() != null) {
+                    float pressure = response.body().getMain().getPressure();
+                    sensorValue = pressure;
+                    visionPreasure(pressure);
                 }
+            }
 
-                @Override
-                public void onFailure(Call<WeatherPojo> call, Throwable t) {
-                    Toast.makeText(MainActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            @Override
+            public void onFailure(Call<WeatherPojo> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (pressureSensor != null){
+        if (pressureSensor != null) {
             sensorManager.registerListener(sensorEventListener, pressureSensor, SensorManager.SENSOR_DELAY_UI);
         }
     }
@@ -248,38 +263,63 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         sensorManager.unregisterListener(sensorEventListener);
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        if(location!=null){
-            new Thread(new Runnable() {
+    //LOCATION GET
+    @SuppressLint("MissingPermission")
+    private void getLocation() {
+        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+
+            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
-                public void run() {
-                    response((float) location.getLatitude(),(float) location.getLongitude());
-                    setVisibleState();
+                public void onComplete(@NonNull Task<Location> task) {
+                    Location location = null;
+                    if(task.isSuccessful() && task.getResult()!=null){
+                        location  = task.getResult();
+                    }
+
+                    if (location != null) {
+                        try {
+                            Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                            List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            response((float) addressList.get(0).getLatitude(), (float) addressList.get(0).getLongitude());
+                            setVisibleState();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), getLocationCallBack(), Looper.myLooper());
+                                setVisibleState();
+                                fusedLocationProviderClient.removeLocationUpdates(getLocationCallBack());
+                            }
+                        }).start();
+                    }
                 }
-            }).start();
-
-        }
-
-        if(mlocationManager!=null){
-            mlocationManager.removeUpdates(this);
+            });
         }
     }
 
+    private LocationCallback getLocationCallBack(){
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location location1 = locationResult.getLastLocation();
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+                response((float) location1.getLatitude(), (float) location1.getLongitude());
+            }
+        };
 
+        return locationCallback;
     }
 
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
+    private LocationRequest getLocationRequest(){
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
 
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-
+        return locationRequest;
     }
 
     private void displayLocationSettingsRequest(Context context, Activity activity) {
@@ -287,12 +327,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 .addApi(LocationServices.API).build();
         googleApiClient.connect();
 
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(10000 / 2);
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(getLocationRequest());
         builder.setAlwaysShow(true);
 
         PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
@@ -302,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        setLocationSetting();
+                        getLocation();
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         try {
@@ -325,14 +360,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==REQUEST_CHECK_SETTINGS){
-            setLocationSetting();
+            getLocation();
         }
-    }
-
-    @SuppressLint("MissingPermission")
-    private void setLocationSetting(){
-        mlocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
     }
 
     //set alpha image
@@ -347,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         }
     }
+
 
     private AnimationSet animationRotate(float degrees){
         AnimationSet animSet = new AnimationSet(true);
@@ -370,7 +400,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         visionPreasure(values[0]);
         sensorValue= values[0];
         progressBar.setVisibility(View.INVISIBLE);
-        progressBarForTextView.setVisibility(View.INVISIBLE);
         isActive = true;
         activeGauge(imageViewGauge, false);
         activeGauge(imageViewArrow, true);
@@ -379,9 +408,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     //visible guage and arrow
     private void setVisibleState(){
         progressBar.setVisibility(View.INVISIBLE);
-        progressBarForTextView.setVisibility(View.INVISIBLE);
         isActive = true;
         activeGauge(imageViewGauge, false);
         activeGauge(imageViewArrow, true);
     }
+
 }
