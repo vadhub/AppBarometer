@@ -296,12 +296,14 @@ public class MainActivity extends AppCompatActivity {
                                                 Location location = locationResult.getLastLocation();
                                                 response((float) location.getLatitude(), (float) location.getLongitude());
                                                 setVisibleState();
-                                                System.out.println("0");
+                                                fusedLocationProviderClient.removeLocationUpdates(this);
+
                                             }
                                         };
                                         fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
-                                        System.out.println("1");
-                                        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                                        if(sensorValue!=0){
+                                            fusedLocationProviderClient=null;
+                                        }
                                     }
                                 });
                             }
