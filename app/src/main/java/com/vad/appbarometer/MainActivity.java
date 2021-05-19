@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
                             sensorEventListener = null;
                         }
                     });
-
                 }
             }).start();
 
@@ -248,7 +247,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -289,36 +287,39 @@ public class MainActivity extends AppCompatActivity {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), getLocationCallBack(), Looper.myLooper());
-                                setVisibleState();
-                                fusedLocationProviderClient.removeLocationUpdates(getLocationCallBack());
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        LocationCallback locationCallback = new LocationCallback() {
+                                            @Override
+                                            public void onLocationResult(@NonNull LocationResult locationResult) {
+                                                Location location = locationResult.getLastLocation();
+                                                response((float) location.getLatitude(), (float) location.getLongitude());
+                                                setVisibleState();
+                                                System.out.println("0");
+                                            }
+                                        };
+                                        fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
+                                        System.out.println("1");
+                                        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                                    }
+                                });
                             }
                         }).start();
                     }
                 }
             });
+        }else{
+            checkPermission();
         }
     }
 
-    private LocationCallback getLocationCallBack(){
-        LocationCallback locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Location location1 = locationResult.getLastLocation();
-
-                response((float) location1.getLatitude(), (float) location1.getLongitude());
-            }
-        };
-
-        return locationCallback;
-    }
 
     private LocationRequest getLocationRequest(){
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
-
         return locationRequest;
     }
 
@@ -376,7 +377,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private AnimationSet animationRotate(float degrees){
         AnimationSet animSet = new AnimationSet(true);
