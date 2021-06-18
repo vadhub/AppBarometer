@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        pressureSensor = null;//sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
