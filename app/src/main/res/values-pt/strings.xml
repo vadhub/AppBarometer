@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Barômetro</string>
+    <string name="permission_message_body">Permitir acesso a geodados</string>
+    <string name="permission_deny">Negar</string>
+    <string name="permission_ok">Garantido</string>
+    <string name="permission_name">Permissão necessária</string>
+
+    <string-array name="bar">
+        <item>hPa</item>
+        <item>mmHg</item>
+    </string-array>
+</resources>
