@@ -2,7 +2,6 @@ package com.vad.appbarometer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -10,9 +9,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -23,11 +22,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 
 import android.os.Looper;
-import android.provider.Settings;
 import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
@@ -86,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spinnerBar;
     private String changMBar;
     private float sensorValue;
+    private SharedPreferences prefer;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -94,9 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isActive = false;
 
-    public static final int REQUEST_CHECK_SETTINGS = 1209;
+    public static final int REQUEST_CHECK_SETTINGS = 12091;
     public static final String API_KEY = "e19089086c20c76bdc3bfbbe2a6ad29c";
-    private static final int REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION = 1043;
+    private static final int REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION = 10431;
 
     private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
@@ -172,7 +170,16 @@ public class MainActivity extends AppCompatActivity {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         barChange = getResources().getStringArray(R.array.bar);
-        changMBar = barChange[0];
+
+        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+
+        imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
+        imageViewGauge = (ImageView) findViewById(R.id.imageView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        setStartPosition();
+
+        Toast.makeText(this, ""+getStatePres(), Toast.LENGTH_SHORT).show();
 
         spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -185,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
                     visionPreasure(MathSets.convertToMmHg(sensorValue));
                     imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
                 }
+
+                saveStatePres(i);
             }
 
             @Override
@@ -192,12 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-
-        imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
-        imageViewGauge = (ImageView) findViewById(R.id.imageView);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
@@ -286,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
                                                 response((float) location.getLatitude(), (float) location.getLongitude());
                                                 setVisibleState();
                                                 fusedLocationProviderClient.removeLocationUpdates(this);
-
                                             }
                                         };
                                         fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
@@ -402,6 +404,34 @@ public class MainActivity extends AppCompatActivity {
         isActive = true;
         activeGauge(imageViewGauge, false);
         activeGauge(imageViewArrow, true);
+    }
+
+    //save state hpa or mmhg
+    private void saveStatePres(int type){
+        prefer = getSharedPreferences("pressure_state_app", MODE_PRIVATE);
+        SharedPreferences.Editor ed = prefer.edit();
+        ed.putInt("type_pressure_", type);
+        ed.apply();
+    }
+
+    //get state hpa or mmhg
+    private int getStatePres(){
+        prefer = getSharedPreferences("pressure_state_app", MODE_PRIVATE);
+        return prefer.getInt("type_pressure_", 0);
+    }
+
+    private void setStartPosition(){
+        if(getStatePres()==0){
+            imageViewGauge.setImageDrawable(getDrawable(guage));
+            changMBar = barChange[0];
+            spinnerBar.setSelection(0, true);
+            visionPreasure(sensorValue);
+        }else{
+            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
+            changMBar = barChange[1];
+            spinnerBar.setSelection(1, true);
+            visionPreasure(MathSets.convertToMmHg(sensorValue));
+        }
     }
 
 }

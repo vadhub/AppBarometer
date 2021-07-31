@@ -17,8 +17,6 @@
         android:theme="@style/Theme.AppBarometer"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".splashscreen.SplashScreen"></activity>
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-5356301729869498~2382504960" />
