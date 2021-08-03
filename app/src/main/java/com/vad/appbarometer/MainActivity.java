@@ -59,6 +59,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
+import com.vad.appbarometer.utils.AnimationSets;
 import com.vad.appbarometer.utils.MathSets;
 
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager mLocationManager;
     private Spinner spinnerBar;
     private String changMBar;
-    private float sensorValue;
+    private static float sensorValue;
     private SharedPreferences prefer;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -108,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             float[] values = sensorEvent.values;
                             sensorValue = values[0];
-                            setPressure(values);
-
+                            setPressure(values[0]);
+                            setStartPosition(values[0]);
                             sensorManager.unregisterListener(sensorEventListener);
                             sensorEventListener = null;
                         }
@@ -177,30 +178,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        setStartPosition();
-
         Toast.makeText(this, ""+getStatePres(), Toast.LENGTH_SHORT).show();
-
-        spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                changMBar = barChange[i];
-                if (i == 0) {
-                    visionPreasure(sensorValue);
-                    imageViewGauge.setImageDrawable(getDrawable(guage));
-                } else {
-                    visionPreasure(MathSets.convertToMmHg(sensorValue));
-                    imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-                }
-
-                saveStatePres(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
 
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
@@ -212,12 +190,37 @@ public class MainActivity extends AppCompatActivity {
             mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         }
 
+        spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                changMBar = barChange[i];
+                saveStatePres(i);
+                if (i == 0) {
+                    visionPreasure(sensorValue);
+                    imageViewGauge.setImageDrawable(getDrawable(guage));
+
+                } else {
+                    visionPreasure(MathSets.convertToMmHg(sensorValue));
+                    imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        Toast.makeText(this, "++"+getStatePres(), Toast.LENGTH_SHORT).show();
+
     }
 
     private void visionPreasure(float pres) {
         mBarText.setText(String.format("%.2f " + changMBar, pres));
+        AnimationSets aset = new AnimationSets();
+        Toast.makeText(this, "112 "+getStatePres(), Toast.LENGTH_SHORT).show();
 
-        AnimationSet animationSet = animationRotate(MathSets.getGradus(pres));
+        AnimationSet animationSet = aset.animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
     }
 
@@ -228,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
                 if (response.body() != null) {
                     float pressure = response.body().getMain().getPressure();
                     sensorValue = pressure;
-                    visionPreasure(pressure);
                 }
             }
 
@@ -271,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
                             Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                             List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                             response((float) addressList.get(0).getLatitude(), (float) addressList.get(0).getLongitude());
+                            setStartPosition(sensorValue);
                             setVisibleState();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -287,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
                                             public void onLocationResult(@NonNull LocationResult locationResult) {
                                                 Location location = locationResult.getLastLocation();
                                                 response((float) location.getLatitude(), (float) location.getLongitude());
+                                                setStartPosition(sensorValue);
                                                 setVisibleState();
                                                 fusedLocationProviderClient.removeLocationUpdates(this);
                                             }
@@ -371,27 +375,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private AnimationSet animationRotate(float degrees){
-        AnimationSet animSet = new AnimationSet(true);
-        animSet.setInterpolator(new DecelerateInterpolator());
-        animSet.setFillAfter(true);
-        animSet.setFillEnabled(true);
-
-        final RotateAnimation animRotate = new RotateAnimation(0.0f, degrees,
-                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
-                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
-
-        animRotate.setDuration(1500);
-        animRotate.setFillAfter(true);
-        animSet.addAnimation(animRotate);
-
-        return animSet;
-    }
-
     //set pressure from sensorEvent
-    private void setPressure(float values[]){
-        visionPreasure(values[0]);
-        sensorValue= values[0];
+    private void setPressure(float values){
+        sensorValue= values;
         progressBar.setVisibility(View.INVISIBLE);
         isActive = true;
         activeGauge(imageViewGauge, false);
@@ -417,20 +403,20 @@ public class MainActivity extends AppCompatActivity {
     //get state hpa or mmhg
     private int getStatePres(){
         prefer = getSharedPreferences("pressure_state_app", MODE_PRIVATE);
-        return prefer.getInt("type_pressure_", 0);
+        return prefer.getInt("type_pressure_", -1);
     }
 
-    private void setStartPosition(){
+    private void setStartPosition(float value){
         if(getStatePres()==0){
             imageViewGauge.setImageDrawable(getDrawable(guage));
             changMBar = barChange[0];
-            spinnerBar.setSelection(0, true);
-            visionPreasure(sensorValue);
+            spinnerBar.setSelection(0);
+            visionPreasure(value);
         }else{
             imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
             changMBar = barChange[1];
-            spinnerBar.setSelection(1, true);
-            visionPreasure(MathSets.convertToMmHg(sensorValue));
+            spinnerBar.setSelection(1);
+            visionPreasure(MathSets.convertToMmHg(value));
         }
     }
 
