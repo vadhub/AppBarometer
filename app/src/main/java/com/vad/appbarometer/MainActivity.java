@@ -83,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager mLocationManager;
     private Spinner spinnerBar;
     private String changMBar;
-    private static float sensorValue;
+    private float sensorValue;
     private SharedPreferences prefer;
+    private int isHg = 0;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -178,8 +179,6 @@ public class MainActivity extends AppCompatActivity {
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        Toast.makeText(this, ""+getStatePres(), Toast.LENGTH_SHORT).show();
-
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
@@ -190,11 +189,18 @@ public class MainActivity extends AppCompatActivity {
             mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         }
 
+        if(getStatePres()==0){
+            spinnerBar.setSelection(0);
+            changMBar = barChange[0];
+        }else{
+            spinnerBar.setSelection(1);
+            changMBar = barChange[1];
+        }
+
         spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 changMBar = barChange[i];
-                saveStatePres(i);
                 if (i == 0) {
                     visionPreasure(sensorValue);
                     imageViewGauge.setImageDrawable(getDrawable(guage));
@@ -203,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
                     visionPreasure(MathSets.convertToMmHg(sensorValue));
                     imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
                 }
+
+                isHg=i;
             }
 
             @Override
@@ -211,14 +219,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Toast.makeText(this, "++"+getStatePres(), Toast.LENGTH_SHORT).show();
-
     }
 
     private void visionPreasure(float pres) {
         mBarText.setText(String.format("%.2f " + changMBar, pres));
         AnimationSets aset = new AnimationSets();
-        Toast.makeText(this, "112 "+getStatePres(), Toast.LENGTH_SHORT).show();
 
         AnimationSet animationSet = aset.animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
@@ -231,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.body() != null) {
                     float pressure = response.body().getMain().getPressure();
                     sensorValue = pressure;
+                    setStartPosition(sensorValue);
                 }
             }
 
@@ -253,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(sensorEventListener);
+        saveStatePres(isHg);
     }
 
     //LOCATION GET
@@ -273,7 +280,6 @@ public class MainActivity extends AppCompatActivity {
                             Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                             List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                             response((float) addressList.get(0).getLatitude(), (float) addressList.get(0).getLongitude());
-                            setStartPosition(sensorValue);
                             setVisibleState();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -290,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                                             public void onLocationResult(@NonNull LocationResult locationResult) {
                                                 Location location = locationResult.getLastLocation();
                                                 response((float) location.getLatitude(), (float) location.getLongitude());
-                                                setStartPosition(sensorValue);
+                                                Toast.makeText(MainActivity.this, "1"+getStatePres(), Toast.LENGTH_SHORT).show();
                                                 setVisibleState();
                                                 fusedLocationProviderClient.removeLocationUpdates(this);
                                             }
@@ -310,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
     }
-
 
     private LocationRequest getLocationRequest(){
         LocationRequest locationRequest = LocationRequest.create();
@@ -403,19 +408,15 @@ public class MainActivity extends AppCompatActivity {
     //get state hpa or mmhg
     private int getStatePres(){
         prefer = getSharedPreferences("pressure_state_app", MODE_PRIVATE);
-        return prefer.getInt("type_pressure_", -1);
+        return prefer.getInt("type_pressure_", 0);
     }
 
     private void setStartPosition(float value){
-        if(getStatePres()==0){
+        if(changMBar.equals(barChange[0])){
             imageViewGauge.setImageDrawable(getDrawable(guage));
-            changMBar = barChange[0];
-            spinnerBar.setSelection(0);
             visionPreasure(value);
         }else{
             imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-            changMBar = barChange[1];
-            spinnerBar.setSelection(1);
             visionPreasure(MathSets.convertToMmHg(value));
         }
     }
