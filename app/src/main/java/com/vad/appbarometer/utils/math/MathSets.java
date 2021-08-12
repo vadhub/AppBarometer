@@ -1,4 +1,4 @@
-package com.vad.appbarometer.utils;
+package com.vad.appbarometer.utils.math;
 
 
 public class MathSets {

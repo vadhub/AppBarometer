@@ -1,4 +1,4 @@
-package com.vad.appbarometer;
+package com.vad.appbarometer.screens.main;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +22,12 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.os.Looper;
 import android.view.View;
 import android.view.animation.AnimationSet;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.RotateAnimation;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,7 +48,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -57,10 +55,11 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.vad.appbarometer.R;
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
-import com.vad.appbarometer.utils.AnimationSets;
-import com.vad.appbarometer.utils.MathSets;
+import com.vad.appbarometer.utils.animation.AnimationSets;
+import com.vad.appbarometer.utils.math.MathSets;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,11 +71,9 @@ import retrofit2.Response;
 
 import static com.vad.appbarometer.R.drawable.guage;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PressureView{
 
     private TextView mBarText;
-    private SensorManager sensorManager;
-    private Sensor pressureSensor;
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
@@ -95,43 +92,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean isActive = false;
 
     public static final int REQUEST_CHECK_SETTINGS = 12091;
-    public static final String API_KEY = "e19089086c20c76bdc3bfbbe2a6ad29c";
     private static final int REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION = 10431;
-
-    private SensorEventListener sensorEventListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent sensorEvent) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            float[] values = sensorEvent.values;
-                            sensorValue = values[0];
-                            setPressure(values[0]);
-                            setStartPosition(values[0]);
-                            sensorManager.unregisterListener(sensorEventListener);
-                            sensorEventListener = null;
-                        }
-                    });
-                }
-            }).start();
-
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {
-        }
-    };
 
     private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
         } else {
-            displayLocationSettingsRequest(this, MainActivity.this);
+            displayLocationSettingsRequest(this);
         }
     }
 
@@ -139,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                displayLocationSettingsRequest(this, MainActivity.this);
+                displayLocationSettingsRequest(this);
             }
         }
     }
@@ -169,11 +137,9 @@ public class MainActivity extends AppCompatActivity {
         spinnerBar.setAdapter(adapter);
 
         mBarText = (TextView) findViewById(R.id.mBarText);
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
 
         barChange = getResources().getStringArray(R.array.bar);
-
-        pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
@@ -209,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
                     visionPreasure(MathSets.convertToMmHg(sensorValue));
                     imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
                 }
-
                 isHg=i;
             }
 
@@ -229,36 +194,9 @@ public class MainActivity extends AppCompatActivity {
         imageViewArrow.startAnimation(animationSet);
     }
 
-    private void response(float lat, float lon) {
-        RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
-            @Override
-            public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
-                if (response.body() != null) {
-                    float pressure = response.body().getMain().getPressure();
-                    sensorValue = pressure;
-                    setStartPosition(sensorValue);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WeatherPojo> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (pressureSensor != null) {
-            sensorManager.registerListener(sensorEventListener, pressureSensor, SensorManager.SENSOR_DELAY_UI);
-        }
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(sensorEventListener);
         saveStatePres(isHg);
     }
 
@@ -285,30 +223,19 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }else{
-                        new Thread(new Runnable() {
+                        LocationCallback locationCallback = new LocationCallback() {
                             @Override
-                            public void run() {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        LocationCallback locationCallback = new LocationCallback() {
-                                            @Override
-                                            public void onLocationResult(@NonNull LocationResult locationResult) {
-                                                Location location = locationResult.getLastLocation();
-                                                response((float) location.getLatitude(), (float) location.getLongitude());
-                                                Toast.makeText(MainActivity.this, "1"+getStatePres(), Toast.LENGTH_SHORT).show();
-                                                setVisibleState();
-                                                fusedLocationProviderClient.removeLocationUpdates(this);
-                                            }
-                                        };
-                                        fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
-                                        if(sensorValue!=0){
-                                            fusedLocationProviderClient=null;
-                                        }
-                                    }
-                                });
+                            public void onLocationResult(@NonNull LocationResult locationResult) {
+                                Location location = locationResult.getLastLocation();
+                                response((float) location.getLatitude(), (float) location.getLongitude());
+                                setVisibleState();
+                                fusedLocationProviderClient.removeLocationUpdates(this);
                             }
-                        }).start();
+                        };
+                        fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
+                        if(sensorValue!=0){
+                            fusedLocationProviderClient=null;
+                        }
                     }
                 }
             });
@@ -317,16 +244,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private LocationRequest getLocationRequest(){
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(1000);
-        return locationRequest;
-    }
 
-    private void displayLocationSettingsRequest(Context context, Activity activity) {
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+    private void displayLocationSettingsRequest(Activity activity) {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
                 .addApi(LocationServices.API).build();
         googleApiClient.connect();
 
@@ -348,11 +268,11 @@ public class MainActivity extends AppCompatActivity {
                             // in onActivityResult().
                             status.startResolutionForResult(activity, REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
-                            Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Toast.makeText(context, "GPS unable", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "GPS unable", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -411,7 +331,8 @@ public class MainActivity extends AppCompatActivity {
         return prefer.getInt("type_pressure_", 0);
     }
 
-    private void setStartPosition(float value){
+    @Override
+    public void setStartPositionUnit(float value){
         if(changMBar.equals(barChange[0])){
             imageViewGauge.setImageDrawable(getDrawable(guage));
             visionPreasure(value);
@@ -419,6 +340,12 @@ public class MainActivity extends AppCompatActivity {
             imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
             visionPreasure(MathSets.convertToMmHg(value));
         }
+    }
+
+    @Override
+    public void showError(String str) {
+        Toast.makeText(this, ""+str, Toast.LENGTH_SHORT).show();
+
     }
 
 }

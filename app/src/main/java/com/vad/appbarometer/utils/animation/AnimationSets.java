@@ -1,4 +1,4 @@
-package com.vad.appbarometer.utils;
+package com.vad.appbarometer.utils.animation;
 
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
