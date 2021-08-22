@@ -1,13 +1,8 @@
 package com.vad.appbarometer.screens.main;
 
-import android.location.Address;
-import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,18 +32,5 @@ public class PressurePresenter {
                 view.showError(t.getMessage());
             }
         });
-    }
-
-    class GSPQueryTask extends AsyncTask<Void, Void, List<Address>> {
-
-        @Override
-        protected List<Address> doInBackground(Void... voids) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-
-        }
     }
 }

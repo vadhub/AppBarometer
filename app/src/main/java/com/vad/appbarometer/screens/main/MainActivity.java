@@ -14,15 +14,10 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.os.Looper;
@@ -77,27 +72,24 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
-    private LocationManager mLocationManager;
+
     private Spinner spinnerBar;
     private String changMBar;
     private float sensorValue;
     private SharedPreferences prefer;
     private int isHg = 0;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
     private AdView mAdView;
     private String[] barChange;
 
     private boolean isActive = false;
 
-    public static final int REQUEST_CHECK_SETTINGS = 12091;
-    private static final int REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION = 10431;
+
 
     private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
         } else {
             displayLocationSettingsRequest(this);
         }
@@ -105,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements PressureView{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 displayLocationSettingsRequest(this);
             }
@@ -138,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements PressureView{
 
         mBarText = (TextView) findViewById(R.id.mBarText);
 
-
         barChange = getResources().getStringArray(R.array.bar);
 
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
@@ -151,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements PressureView{
 
         if (pressureSensor == null) {
             checkPermission();
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
             mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         }
 
@@ -200,89 +191,10 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         saveStatePres(isHg);
     }
 
-    //LOCATION GET
-    @SuppressLint("MissingPermission")
-    private void getLocation() {
-        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-
-            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    Location location = null;
-                    if(task.isSuccessful() && task.getResult()!=null){
-                        location  = task.getResult();
-                    }
-
-                    if (location != null) {
-                        try {
-                            Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-                            List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                            response((float) addressList.get(0).getLatitude(), (float) addressList.get(0).getLongitude());
-                            setVisibleState();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }else{
-                        LocationCallback locationCallback = new LocationCallback() {
-                            @Override
-                            public void onLocationResult(@NonNull LocationResult locationResult) {
-                                Location location = locationResult.getLastLocation();
-                                response((float) location.getLatitude(), (float) location.getLongitude());
-                                setVisibleState();
-                                fusedLocationProviderClient.removeLocationUpdates(this);
-                            }
-                        };
-                        fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
-                        if(sensorValue!=0){
-                            fusedLocationProviderClient=null;
-                        }
-                    }
-                }
-            });
-        }else{
-            checkPermission();
-        }
-    }
-
-
-    private void displayLocationSettingsRequest(Activity activity) {
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
-                .addApi(LocationServices.API).build();
-        googleApiClient.connect();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(getLocationRequest());
-        builder.setAlwaysShow(true);
-
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        getLocation();
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            // Show the dialog by calling startResolutionForResult(), and check the result
-                            // in onActivityResult().
-                            status.startResolutionForResult(activity, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            Toast.makeText(activity, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Toast.makeText(activity, "GPS unable", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQUEST_CHECK_SETTINGS){
+        if(requestCode==RequestCodes.REQUEST_CHECK_SETTINGS){
             getLocation();
         }
     }
