@@ -54,7 +54,9 @@ import com.vad.appbarometer.R;
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.animation.AnimationSets;
+import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.math.MathSets;
+import com.vad.appbarometer.utils.savestateunit.SaveState;
 
 import java.io.IOException;
 import java.util.List;
@@ -76,15 +78,18 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     private Spinner spinnerBar;
     private String changMBar;
     private float sensorValue;
-    private SharedPreferences prefer;
     private int isHg = 0;
 
     private AdView mAdView;
     private String[] barChange;
+    private SaveState saveState;
+    private PressurePresenter presenter;
+    private GPSdata gps;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationManager mLocationManager;
+    private Geocoder geocoder;
 
     private boolean isActive = false;
-
-
 
     private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
@@ -118,6 +123,14 @@ public class MainActivity extends AppCompatActivity implements PressureView{
             }
         });
 
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        geocoder = new Geocoder(MainActivity.this,Locale.getDefault());
+
+        gps = new GPSdata(fusedLocationProviderClient, mLocationManager, geocoder);
+        saveState = new SaveState(this);
+        presenter = new PressurePresenter(this, gps);
+
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -141,12 +154,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
 
-        if (pressureSensor == null) {
-            checkPermission();
-            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        }
-
-        if(getStatePres()==0){
+        if(saveState.getStatePres()==0){
             spinnerBar.setSelection(0);
             changMBar = barChange[0];
         }else{
@@ -180,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     private void visionPreasure(float pres) {
         mBarText.setText(String.format("%.2f " + changMBar, pres));
         AnimationSets aset = new AnimationSets();
-
         AnimationSet animationSet = aset.animationRotate(MathSets.getGradus(pres));
         imageViewArrow.startAnimation(animationSet);
     }
@@ -188,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     @Override
     protected void onPause() {
         super.onPause();
-        saveStatePres(isHg);
+        saveState.saveStatePres(isHg);
     }
 
     @Override
@@ -229,20 +236,6 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         activeGauge(imageViewArrow, true);
     }
 
-    //save state hpa or mmhg
-    private void saveStatePres(int type){
-        prefer = getSharedPreferences("pressure_state_app", MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefer.edit();
-        ed.putInt("type_pressure_", type);
-        ed.apply();
-    }
-
-    //get state hpa or mmhg
-    private int getStatePres(){
-        prefer = getSharedPreferences("pressure_state_app", MODE_PRIVATE);
-        return prefer.getInt("type_pressure_", 0);
-    }
-
     @Override
     public void setStartPositionUnit(float value){
         if(changMBar.equals(barChange[0])){
@@ -258,6 +251,18 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     public void showError(String str) {
         Toast.makeText(this, ""+str, Toast.LENGTH_SHORT).show();
 
+    }
+
+    @Override
+    public void showDialog(Status status) {
+        try {
+            // Show the dialog by calling startResolutionForResult(), and check the result
+            // in onActivityResult().
+            status.startResolutionForResult(this, RequestCodes.REQUEST_CHECK_SETTINGS);
+        } catch (IntentSender.SendIntentException e) {
+
+            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
