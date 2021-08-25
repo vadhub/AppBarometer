@@ -30,4 +30,12 @@ public class PressureSensor implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+    public Sensor getPressureSensor() {
+        return pressureSensor;
+    }
+
+    public void setPressureSensor(Sensor pressureSensor) {
+        this.pressureSensor = pressureSensor;
+    }
 }

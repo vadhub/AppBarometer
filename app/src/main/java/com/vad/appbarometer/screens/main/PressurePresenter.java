@@ -1,11 +1,6 @@
 package com.vad.appbarometer.screens.main;
 
 
-import android.app.Activity;
-import android.content.IntentSender;
-import android.widget.Toast;
-
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -16,6 +11,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.gps.GPSdata;
+import com.vad.appbarometer.utils.pressure.PressureSensor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,12 +21,13 @@ public class PressurePresenter {
 
     public static final String API_KEY ="e19089086c20c76bdc3bfbbe2a6ad29c";
     private GPSdata gps;
-
+    private PressureSensor pressureSensor;
     private PressureView view;
 
-    public PressurePresenter(PressureView view, GPSdata gps) {
+    public PressurePresenter(PressureView view, GPSdata gps, PressureSensor pressureSensor) {
         this.view=view;
         this.gps=gps;
+        this.pressureSensor=pressureSensor;
     }
 
     private void response(float lat, float lon) {
@@ -48,6 +45,12 @@ public class PressurePresenter {
                 view.showError(t.getMessage());
             }
         });
+    }
+
+    public void checkSensor(){
+        if(pressureSensor.getPressureSensor()==null){
+            view.checkPermission();
+        }
     }
 
     public void displayLocationSettingsRequest() {

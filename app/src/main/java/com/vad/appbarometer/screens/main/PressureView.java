@@ -9,4 +9,5 @@ public interface PressureView {
     void showError(String str);
     void showDialog(Status status);
     GoogleApiClient getGoogleApiClient();
+    void checkPermission();
 }

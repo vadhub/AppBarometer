@@ -60,8 +60,8 @@ public class GPSdata {
     @SuppressLint("MissingPermission")
     public float[] getLocation() {
         final float[] coordinates = new float[2];
-        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
+        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {

@@ -56,6 +56,7 @@ import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.math.MathSets;
+import com.vad.appbarometer.utils.pressure.PressureSensor;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
 
 import java.io.IOException;
@@ -88,10 +89,12 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationManager mLocationManager;
     private Geocoder geocoder;
+    private PressureSensor pressureSensor;
 
     private boolean isActive = false;
 
-    private void checkPermission() {
+    @Override
+    public void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
@@ -123,13 +126,14 @@ public class MainActivity extends AppCompatActivity implements PressureView{
             }
         });
 
+        pressureSensor = new PressureSensor(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         geocoder = new Geocoder(MainActivity.this,Locale.getDefault());
 
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, geocoder);
         saveState = new SaveState(this);
-        presenter = new PressurePresenter(this, gps);
+        presenter = new PressurePresenter(this, gps, pressureSensor);
 
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
