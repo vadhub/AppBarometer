@@ -130,7 +130,9 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         geocoder = new Geocoder(MainActivity.this,Locale.getDefault());
+
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, geocoder);
+
         saveState = new SaveState(this);
 
         presenter = new PressurePresenter(this, gps, pressureSensor);
@@ -208,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==RequestCodes.REQUEST_CHECK_SETTINGS){
-            gps.getLocation();
+            presenter.setCoordinate();
         }
     }
 

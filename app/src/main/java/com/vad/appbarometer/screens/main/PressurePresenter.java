@@ -30,7 +30,7 @@ public class PressurePresenter {
         this.pressureSensor=pressureSensor;
     }
 
-    private void response(float lat, float lon) {
+    public void response(float lat, float lon) {
         RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
             @Override
             public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
@@ -67,7 +67,8 @@ public class PressurePresenter {
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        gps.getLocation();
+
+                        setCoordinate();
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         view.showDialog(status);
@@ -78,6 +79,11 @@ public class PressurePresenter {
                 }
             }
         });
+    }
+
+    public void setCoordinate(){
+        float[] i = gps.getLocation();
+        response(i[0], i[1]);
     }
 
 
