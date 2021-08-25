@@ -13,6 +13,8 @@ public class PressureSensor implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor pressureSensor;
     private Context context;
+    private float value = -10;
+
 
     public PressureSensor(Context context) {
         this.context = context;
@@ -22,7 +24,7 @@ public class PressureSensor implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        float[] values = sensorEvent.values;
+        value = sensorEvent.values[0];
         sensorManager.unregisterListener(this);
     }
 
@@ -37,5 +39,13 @@ public class PressureSensor implements SensorEventListener {
 
     public void setPressureSensor(Sensor pressureSensor) {
         this.pressureSensor = pressureSensor;
+    }
+
+    public float getValue() {
+        return value;
+    }
+
+    public void setValue(float value) {
+        this.value = value;
     }
 }

@@ -50,6 +50,8 @@ public class PressurePresenter {
     public void checkSensor(){
         if(pressureSensor.getPressureSensor()==null){
             view.checkPermission();
+        }else{
+            view.setStartPositionUnit(pressureSensor.getValue());
         }
     }
 

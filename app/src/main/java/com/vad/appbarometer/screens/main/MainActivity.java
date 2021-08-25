@@ -130,9 +130,9 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         geocoder = new Geocoder(MainActivity.this,Locale.getDefault());
-
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, geocoder);
         saveState = new SaveState(this);
+
         presenter = new PressurePresenter(this, gps, pressureSensor);
 
         mAdView = findViewById(R.id.adView);
@@ -157,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
+
+        presenter.checkSensor();
 
         if(saveState.getStatePres()==0){
             spinnerBar.setSelection(0);
