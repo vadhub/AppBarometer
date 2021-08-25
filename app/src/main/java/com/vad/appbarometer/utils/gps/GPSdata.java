@@ -58,7 +58,7 @@ public class GPSdata {
     }
 
     @SuppressLint("MissingPermission")
-    private float[] getLocation() {
+    public float[] getLocation() {
         final float[] coordinates = new float[2];
         if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
@@ -107,40 +107,5 @@ public class GPSdata {
         fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
         return location[0];
     }
-
-    private void displayLocationSettingsRequest(Activity activity) {
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
-                .addApi(LocationServices.API).build();
-        googleApiClient.connect();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(getLocationRequest());
-        builder.setAlwaysShow(true);
-
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        getLocation();
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            // Show the dialog by calling startResolutionForResult(), and check the result
-                            // in onActivityResult().
-                            status.startResolutionForResult(activity, RequestCodes.REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            Toast.makeText(activity, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Toast.makeText(activity, "GPS unable", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        });
-    }
-
 
 }

@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
         } else {
-            displayLocationSettingsRequest(this);
+            presenter.displayLocationSettingsRequest();
         }
     }
 
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                displayLocationSettingsRequest(this);
+                presenter.displayLocationSettingsRequest();
             }
         }
     }
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==RequestCodes.REQUEST_CHECK_SETTINGS){
-            getLocation();
+            gps.getLocation();
         }
     }
 
@@ -263,6 +263,13 @@ public class MainActivity extends AppCompatActivity implements PressureView{
 
             Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public GoogleApiClient getGoogleApiClient() {
+
+        return new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API).build();
     }
 
 }
