@@ -71,8 +71,8 @@ public class GPSdata {
                     }
 
                     if (location != null) {
-                        coordinates[0] = (float) location.getLatitude();
-                        coordinates[1] = (float) location.getLongitude();
+                        coordinates[0] = (float) getCoordinate(location).get(0).getLatitude();
+                        coordinates[1] = (float) getCoordinate(location).get(0).getLongitude();
                     }else{
                         coordinates[0] = (float) getLocationCallback().getLatitude();
                         coordinates[1] = (float) getLocationCallback().getLongitude();

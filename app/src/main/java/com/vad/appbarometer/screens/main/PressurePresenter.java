@@ -1,7 +1,9 @@
 package com.vad.appbarometer.screens.main;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.IntentSender;
 import android.location.Geocoder;
 import android.location.LocationManager;
 
@@ -16,8 +18,8 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.gps.GPSdata;
-import com.vad.appbarometer.utils.pressure.PressureSensor;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -28,21 +30,19 @@ public class PressurePresenter {
 
     public static final String API_KEY ="e19089086c20c76bdc3bfbbe2a6ad29c";
     private GPSdata gps;
-    private PressureSensor pressureSensor;
     private PressureView view;
-    private Context context;
+    private Activity activity;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationManager mLocationManager;
     private Geocoder geocoder;
 
-    public PressurePresenter(PressureView view, Context context) {
+    public PressurePresenter(PressureView view, Activity activity) {
         this.view=view;
-        this.context = context;
-        pressureSensor = new PressureSensor(context);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        geocoder = new Geocoder(context, Locale.getDefault());
+        this.activity = activity;
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
+        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        geocoder = new Geocoder(activity, Locale.getDefault());
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, geocoder);
     }
 
@@ -52,7 +52,7 @@ public class PressurePresenter {
             public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
                 if (response.body() != null) {
                     float pressure = response.body().getMain().getPressure();
-                    view.setStartPositionUnit(pressure);
+                    view.setPressure(pressure);
                 }
             }
 
@@ -61,16 +61,6 @@ public class PressurePresenter {
                 view.showError(t.getMessage());
             }
         });
-    }
-
-    public void checkSensor(){
-        if(pressureSensor.getPressureSensor()==null){
-            System.out.println("sensor does not");
-            view.checkPermission();
-        }else{
-            view.setStartPositionUnit(pressureSensor.getValue());
-            System.out.println("sensor++"+pressureSensor.getValue()+" "+pressureSensor);
-        }
     }
 
     public void displayLocationSettingsRequest() {
@@ -86,11 +76,20 @@ public class PressurePresenter {
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
                         setCoordinate();
+                        System.out.println("1 setCoor");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        view.showDialog(status);
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            System.out.println("2 show dialog");
+                            status.startResolutionForResult(activity, RequestCodes.REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            view.showError(e.getMessage());
+                        }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        System.out.println("3 not ");
                         view.showError("GPS unable");
                         break;
                 }
@@ -100,6 +99,7 @@ public class PressurePresenter {
 
     public void setCoordinate(){
         float[] i = gps.getLocation();
+        System.out.println(Arrays.toString(i)+"---------------");
         response(i[0], i[1]);
     }
 

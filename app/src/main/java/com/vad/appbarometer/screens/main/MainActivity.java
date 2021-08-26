@@ -53,19 +53,19 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private Spinner spinnerBar;
     private String changMBar;
     private int isHg = 0;
+    private float value = 0;
 
     private AdView mAdView;
     private String[] barChange;
+
     private SaveState saveState;
     private PressurePresenter presenter;
-
     private Sensor mPressure;
     private SensorManager mSensorManage;
 
     private boolean isActive = false;
 
-    @Override
-    public void checkPermission() {
+    private void checkPermission() {
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
@@ -96,18 +96,13 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
             }
         });
-
-        mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
-
-        saveState = new SaveState(this);
-
-        presenter = new PressurePresenter(this, this);
-
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
+        //mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        saveState = new SaveState(this);
         spinnerBar = (Spinner) findViewById(R.id.spinnerChangeMeter);
 
         //adapter for spinner
@@ -127,15 +122,19 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
 
-        //check permission if sensor does not
-        presenter.checkSensor();
+        if(mPressure == null){
+            presenter = new PressurePresenter(this, this);
+            checkPermission();
+        }
 
         if(saveState.getStatePres()==0){
             spinnerBar.setSelection(0);
             changMBar = barChange[0];
+            isHg=0;
         }else{
             spinnerBar.setSelection(1);
             changMBar = barChange[1];
+            isHg=1;
         }
 
         spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -143,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 changMBar = barChange[i];
                 isHg=i;
+                setUnit(i, value);
             }
 
             @Override
@@ -203,15 +203,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     }
 
     @Override
-    public void setStartPositionUnit(float value){
-        if (saveState.getStatePres() == 0) {
-            visionPreasure(value);
-            imageViewGauge.setImageDrawable(getDrawable(guage));
-
-        } else {
-            visionPreasure(MathSets.convertToMmHg(value));
-            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-        }
+    public void setPressure(float value){
+        this.value = value;
+        setUnit(value);
+        setVisibleState();
     }
 
     @Override
@@ -220,15 +215,23 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     }
 
-    @Override
-    public void showDialog(Status status) {
-        try {
-            // Show the dialog by calling startResolutionForResult(), and check the result
-            // in onActivityResult().
-            status.startResolutionForResult(this, RequestCodes.REQUEST_CHECK_SETTINGS);
-        } catch (IntentSender.SendIntentException e) {
+    private void setUnit(float value){
+        if (changMBar.equals(barChange[0])) {
+            visionPreasure(value);
+            imageViewGauge.setImageDrawable(getDrawable(guage));
+        } else {
+            visionPreasure(MathSets.convertToMmHg(value));
+            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
+        }
+    }
 
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+    private void setUnit(int i, float value){
+        if (i == 0) {
+            visionPreasure(value);
+            imageViewGauge.setImageDrawable(getDrawable(guage));
+        } else {
+            visionPreasure(MathSets.convertToMmHg(value));
+            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
         }
     }
 
@@ -241,7 +244,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-
+        value = sensorEvent.values[0];
+        setUnit(sensorEvent.values[0]);
+        mSensorManage.unregisterListener(this);
+        setVisibleState();
     }
 
     @Override
