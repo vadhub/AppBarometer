@@ -6,21 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import android.os.Looper;
 import android.view.View;
 import android.view.animation.AnimationSet;
 
@@ -38,38 +33,17 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.R;
-import com.vad.appbarometer.pojos.WeatherPojo;
-import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.animation.AnimationSets;
-import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.math.MathSets;
-import com.vad.appbarometer.utils.pressure.PressureSensor;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.vad.appbarometer.R.drawable.guage;
 
-public class MainActivity extends AppCompatActivity implements PressureView{
+public class MainActivity extends AppCompatActivity implements PressureView, SensorEventListener {
 
     private TextView mBarText;
     private ImageView imageViewArrow;
@@ -78,18 +52,15 @@ public class MainActivity extends AppCompatActivity implements PressureView{
 
     private Spinner spinnerBar;
     private String changMBar;
-    private float sensorValue;
     private int isHg = 0;
 
     private AdView mAdView;
     private String[] barChange;
     private SaveState saveState;
     private PressurePresenter presenter;
-    private GPSdata gps;
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationManager mLocationManager;
-    private Geocoder geocoder;
-    private PressureSensor pressureSensor;
+
+    private Sensor mPressure;
+    private SensorManager mSensorManage;
 
     private boolean isActive = false;
 
@@ -126,16 +97,12 @@ public class MainActivity extends AppCompatActivity implements PressureView{
             }
         });
 
-        pressureSensor = new PressureSensor(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        geocoder = new Geocoder(MainActivity.this,Locale.getDefault());
-
-        gps = new GPSdata(fusedLocationProviderClient, mLocationManager, geocoder);
+        mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         saveState = new SaveState(this);
 
-        presenter = new PressurePresenter(this, gps, pressureSensor);
+        presenter = new PressurePresenter(this, this);
 
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -160,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
 
+        //check permission if sensor does not
         presenter.checkSensor();
 
         if(saveState.getStatePres()==0){
@@ -174,14 +142,6 @@ public class MainActivity extends AppCompatActivity implements PressureView{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 changMBar = barChange[i];
-                if (i == 0) {
-                    visionPreasure(sensorValue);
-                    imageViewGauge.setImageDrawable(getDrawable(guage));
-
-                } else {
-                    visionPreasure(MathSets.convertToMmHg(sensorValue));
-                    imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-                }
                 isHg=i;
             }
 
@@ -201,9 +161,16 @@ public class MainActivity extends AppCompatActivity implements PressureView{
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManage.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         saveState.saveStatePres(isHg);
+        mSensorManage.unregisterListener(this);
     }
 
     @Override
@@ -227,15 +194,6 @@ public class MainActivity extends AppCompatActivity implements PressureView{
         }
     }
 
-    //set pressure from sensorEvent
-    private void setPressure(float values){
-        sensorValue= values;
-        progressBar.setVisibility(View.INVISIBLE);
-        isActive = true;
-        activeGauge(imageViewGauge, false);
-        activeGauge(imageViewArrow, true);
-    }
-
     //visible guage and arrow
     private void setVisibleState(){
         progressBar.setVisibility(View.INVISIBLE);
@@ -246,12 +204,13 @@ public class MainActivity extends AppCompatActivity implements PressureView{
 
     @Override
     public void setStartPositionUnit(float value){
-        if(changMBar.equals(barChange[0])){
-            imageViewGauge.setImageDrawable(getDrawable(guage));
+        if (saveState.getStatePres() == 0) {
             visionPreasure(value);
-        }else{
-            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
+            imageViewGauge.setImageDrawable(getDrawable(guage));
+
+        } else {
             visionPreasure(MathSets.convertToMmHg(value));
+            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
         }
     }
 
@@ -280,4 +239,13 @@ public class MainActivity extends AppCompatActivity implements PressureView{
                 .addApi(LocationServices.API).build();
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }
