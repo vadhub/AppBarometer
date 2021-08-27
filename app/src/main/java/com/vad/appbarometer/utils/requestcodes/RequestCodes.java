@@ -1,4 +1,4 @@
-package com.vad.appbarometer.screens.main;
+package com.vad.appbarometer.utils.requestcodes;
 
 public class RequestCodes {
     public static final int REQUEST_CHECK_SETTINGS = 12091;
