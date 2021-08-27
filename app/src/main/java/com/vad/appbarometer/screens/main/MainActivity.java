@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -33,11 +32,11 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.vad.appbarometer.R;
 import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
+import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
 
 
@@ -69,8 +68,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
+            System.out.println("check ok");
         } else {
             presenter.displayLocationSettingsRequest();
+            System.out.println("check not");
         }
     }
 
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==RequestCodes.REQUEST_CHECK_SETTINGS){
-            presenter.setCoordinate();
+            checkPermission();
         }
     }
 
@@ -237,6 +238,8 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public GoogleApiClient getGoogleApiClient() {
+
+        System.out.println("google api");
 
         return new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API).build();
