@@ -16,16 +16,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class PressurePresenter implements PresenterView{
 
@@ -33,6 +31,8 @@ public class PressurePresenter implements PresenterView{
     private final GPSdata gps;
     private final PressureView view;
     private final Activity activity;
+    private Disposable disposable;
+    private CompositeDisposable compositeDisposable;
 
     public PressurePresenter(PressureView view, Activity activity) {
         this.view=view;
@@ -40,22 +40,24 @@ public class PressurePresenter implements PresenterView{
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
         LocationManager mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, this);
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void response(float lat, float lon) {
         System.out.println(lat+" "+lon+"--------------------");
 
-        RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).
-                subscribe(
-                        weatherPojo -> {
-                            view.setPressure(weatherPojo.getMain().getPressure());
-                            },
-                        throwable -> {
-                            view.showError(throwable.getMessage());
-                        });
+        disposable =RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).
+                    subscribe(
+                            weatherPojo -> {
+                                view.setPressure(weatherPojo.getMain().getPressure());
+                                },
+                            throwable -> {
+                                view.showError(throwable.getMessage());
+                            });
+        compositeDisposable.add(disposable);
     }
 
     public void displayLocationSettingsRequest() {
@@ -90,6 +92,12 @@ public class PressurePresenter implements PresenterView{
                 }
             }
         });
+    }
+
+    public void disposableDispose(){
+        if(compositeDisposable!=null){
+            compositeDisposable.dispose();
+        }
     }
 
     public void setCoordinate(){

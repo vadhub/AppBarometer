@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     }
 
-    private void visionPreasure(float pres) {
+    private void visionPressure(float pres) {
         mBarText.setText(String.format("%.2f " + changMBar, pres));
         AnimationSets aset = new AnimationSets();
         AnimationSet animationSet = aset.animationRotate(MathSets.getGradus(pres));
@@ -172,6 +172,12 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         super.onPause();
         saveState.saveStatePres(isHg);
         mSensorManage.unregisterListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.disposableDispose();
     }
 
     @Override
@@ -195,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         }
     }
 
-    //visible guage and arrow
+    //visible gauge and arrow
     private void setVisibleState(){
         progressBar.setVisibility(View.INVISIBLE);
         isActive = true;
@@ -218,20 +224,20 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     private void setUnit(float value){
         if (changMBar.equals(barChange[0])) {
-            visionPreasure(value);
+            visionPressure(value);
             imageViewGauge.setImageDrawable(getDrawable(guage));
         } else {
-            visionPreasure(MathSets.convertToMmHg(value));
+            visionPressure(MathSets.convertToMmHg(value));
             imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
         }
     }
 
     private void setUnit(int i, float value){
         if (i == 0) {
-            visionPreasure(value);
+            visionPressure(value);
             imageViewGauge.setImageDrawable(getDrawable(guage));
         } else {
-            visionPreasure(MathSets.convertToMmHg(value));
+            visionPressure(MathSets.convertToMmHg(value));
             imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
         }
     }
