@@ -21,6 +21,8 @@ import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,37 +30,32 @@ import retrofit2.Response;
 public class PressurePresenter implements PresenterView{
 
     public static final String API_KEY ="e19089086c20c76bdc3bfbbe2a6ad29c";
-    private GPSdata gps;
-    private PressureView view;
-    private Activity activity;
-
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationManager mLocationManager;
+    private final GPSdata gps;
+    private final PressureView view;
+    private final Activity activity;
 
     public PressurePresenter(PressureView view, Activity activity) {
         this.view=view;
         this.activity = activity;
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
-        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
+        LocationManager mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, this);
     }
 
     @Override
     public void response(float lat, float lon) {
-        RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY).enqueue(new Callback<WeatherPojo>() {
-            @Override
-            public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
-                if (response.body() != null) {
-                    float pressure = response.body().getMain().getPressure();
-                    view.setPressure(pressure);
-                }
-            }
+        System.out.println(lat+" "+lon+"--------------------");
 
-            @Override
-            public void onFailure(Call<WeatherPojo> call, Throwable t) {
-                view.showError(t.getMessage());
-            }
-        });
+        RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).
+                subscribe(
+                        weatherPojo -> {
+                            view.setPressure(weatherPojo.getMain().getPressure());
+                            },
+                        throwable -> {
+                            view.showError(throwable.getMessage());
+                        });
     }
 
     public void displayLocationSettingsRequest() {
@@ -77,20 +74,17 @@ public class PressurePresenter implements PresenterView{
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
                         setCoordinate();
-                        System.out.println("1 setCoor");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
-                            System.out.println("2 show dialog");
                             status.startResolutionForResult(activity, RequestCodes.REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
                             view.showError(e.getMessage());
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        System.out.println("3 not ");
                         view.showError("GPS unable");
                         break;
                 }
