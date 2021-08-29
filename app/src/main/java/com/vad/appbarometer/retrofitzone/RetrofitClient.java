@@ -24,7 +24,6 @@ public class RetrofitClient {
     }
 
     public JsonPlaceHolder getJsonApi(){
-        System.out.println("create_______________");
         return retrofit2.create(JsonPlaceHolder.class);
     }
 }

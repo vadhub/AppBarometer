@@ -45,7 +45,6 @@ public class PressurePresenter implements PresenterView{
 
     @Override
     public void response(float lat, float lon) {
-        System.out.println(lat+" "+lon+"--------------------");
 
         disposable =RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
                     .subscribeOn(Schedulers.io())

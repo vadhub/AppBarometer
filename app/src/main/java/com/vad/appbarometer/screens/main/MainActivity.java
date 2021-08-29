@@ -68,10 +68,9 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
-            System.out.println("check ok");
+
         } else {
             presenter.displayLocationSettingsRequest();
-            System.out.println("check not");
         }
     }
 
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         mAdView.loadAd(adRequest);
 
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        //mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
         spinnerBar = (Spinner) findViewById(R.id.spinnerChangeMeter);
 
@@ -244,8 +243,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public GoogleApiClient getGoogleApiClient() {
-
-        System.out.println("google api");
 
         return new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API).build();
