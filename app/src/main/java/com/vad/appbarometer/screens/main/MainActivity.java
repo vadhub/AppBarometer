@@ -176,7 +176,9 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        presenter.disposableDispose();
+        if(presenter!=null){
+            presenter.disposableDispose();
+        }
     }
 
     @Override
