@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         mAdView.loadAd(adRequest);
 
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressure = null;//mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
         spinnerBar = (Spinner) findViewById(R.id.spinnerChangeMeter);
 
