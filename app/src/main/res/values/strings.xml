@@ -4,6 +4,7 @@
     <string name="permission_deny">Deny</string>
     <string name="permission_ok">Granted</string>
     <string name="permission_name">Permission required</string>
+    <string name="version">\"Version: \"</string>
 
     <string-array name="bar">
         <item>hPa</item>

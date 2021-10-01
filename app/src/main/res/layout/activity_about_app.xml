@@ -35,16 +35,23 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textViewVersion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Version " />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textViewTweeter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tweeter" />
+
+            <TextView
+                android:id="@+id/textViewShare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="shareClick"
+                android:text="Share" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
