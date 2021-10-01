@@ -15,6 +15,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationSet;
 
@@ -34,6 +36,7 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.vad.appbarometer.R;
+import com.vad.appbarometer.screens.aboutapp.AboutAppActivity;
 import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
@@ -261,5 +264,27 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.about_app_button, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.about_button) {
+            startAboutActivity();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void startAboutActivity(){
+        Intent aboutActivity = new Intent(MainActivity.this, AboutAppActivity.class);
+        startActivity(aboutActivity);
     }
 }
