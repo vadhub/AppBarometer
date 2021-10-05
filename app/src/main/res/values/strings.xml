@@ -6,7 +6,7 @@
     <string name="permission_name">Permission required</string>
     <string name="version">Version: </string>
     <string name="share">to share with friends</string>
-    <string name="copy">text copy</string>
+    <string name="copy">text copied</string>
 
     <string-array name="bar">
         <item>hPa</item>

@@ -10,4 +10,7 @@
         <item>hPa</item>
         <item>mmHg</item>
     </string-array>
+    <string name="version">"Versão: "</string>
+    <string name="share">para compartilhar com amigos</string>
+    <string name="copy">texto copiado</string>
 </resources>

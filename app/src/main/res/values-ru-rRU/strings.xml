@@ -10,4 +10,7 @@
         <item>гПа</item>
         <item>мм рс. ст.</item>
     </string-array>
+    <string name="version">"Версия: "</string>
+    <string name="share">Поделиться с друзьями</string>
+    <string name="copy">текст скопирован</string>
 </resources>
