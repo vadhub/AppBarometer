@@ -1,5 +1,7 @@
 package com.vad.appbarometer.screens.aboutapp;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -25,10 +28,15 @@ public class AboutAppActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_about_app);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         textVersion = (TextView) findViewById(R.id.textViewVersion);
         textTweeter = (TextView) findViewById(R.id.textViewTweeter);
         textShare = (TextView) findViewById(R.id.textViewShare);
         textViewEmail = (TextView) findViewById(R.id.textViewEmail);
+
+        textViewEmail.setText("gabderahmanov99@gmail.com");
 
         try {
             String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -41,9 +49,19 @@ public class AboutAppActivity extends AppCompatActivity {
         textTweeter.setText("@vadhubt");
         textTweeter.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_check_circle_outline_24, 0 ,0 ,0);
 
-        textShare.setText("to share with friends");
+        textShare.setText(R.string.share);
         textShare.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_share_24, 0, 0,0);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void share(){
