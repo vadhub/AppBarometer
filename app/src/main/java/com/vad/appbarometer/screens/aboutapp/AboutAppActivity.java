@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -12,6 +14,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vad.appbarometer.R;
 
@@ -37,6 +40,7 @@ public class AboutAppActivity extends AppCompatActivity {
         textViewEmail = (TextView) findViewById(R.id.textViewEmail);
 
         textViewEmail.setText("gabderahmanov99@gmail.com");
+        textViewEmail.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_alternate_email_24, 0, 0, 0);
 
         try {
             String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -84,5 +88,12 @@ public class AboutAppActivity extends AppCompatActivity {
 
     public void twitterClick(View view) {
         openTwitter();
+    }
+
+    public void onCopy(View view) {
+        Toast.makeText(this, getResources().getString(R.string.copy), Toast.LENGTH_SHORT).show();
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("label", textViewEmail.getText());
+        clipboard.setPrimaryClip(clip);
     }
 }
