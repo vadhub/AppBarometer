@@ -125,16 +125,16 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
 
-        if(mPressure == null){
+        if (mPressure == null) {
             presenter = new PressurePresenter(this, this);
             checkPermission();
         }
 
-        if(saveState.getStatePres()==0){
+        if (saveState.getStatePres()==0) {
             spinnerBar.setSelection(0);
             changMBar = barChange[0];
             isHg=0;
-        }else{
+        } else {
             spinnerBar.setSelection(1);
             changMBar = barChange[1];
             isHg=1;
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(presenter!=null){
+        if (presenter!=null) {
             presenter.disposableDispose();
         }
     }
@@ -187,26 +187,26 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==RequestCodes.REQUEST_CHECK_SETTINGS){
+        if (requestCode==RequestCodes.REQUEST_CHECK_SETTINGS) {
             checkPermission();
         }
     }
 
     //set alpha image
-    private void activeGauge(ImageView imageView, boolean isArrow){
-        if(isActive){
+    private void activeGauge(ImageView imageView, boolean isArrow) {
+        if (isActive) {
             imageView.setImageAlpha(255);
-        }else{
-            if(isArrow){
+        } else {
+            if (isArrow) {
                 imageView.setImageAlpha(0);
-            }else{
+            } else {
                 imageView.setImageAlpha(100);
             }
         }
     }
 
     //visible gauge and arrow
-    private void setVisibleState(){
+    private void setVisibleState() {
         progressBar.setVisibility(View.INVISIBLE);
         isActive = true;
         activeGauge(imageViewGauge, false);
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     }
 
     @Override
-    public void setPressure(float value){
+    public void setPressure(float value) {
         this.value = value;
         setUnit(value);
         setVisibleState();
@@ -223,10 +223,9 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     public void showError(String str) {
         Toast.makeText(this, ""+str, Toast.LENGTH_SHORT).show();
-
     }
 
-    private void setUnit(float value){
+    private void setUnit(float value) {
         if (changMBar.equals(barChange[0])) {
             visionPressure(value);
             imageViewGauge.setImageDrawable(getDrawable(guage));
@@ -236,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         }
     }
 
-    private void setUnit(int i, float value){
+    private void setUnit(int i, float value) {
         if (i == 0) {
             visionPressure(value);
             imageViewGauge.setImageDrawable(getDrawable(guage));
@@ -248,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public GoogleApiClient getGoogleApiClient() {
-
         return new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API).build();
     }
@@ -283,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         return super.onOptionsItemSelected(item);
     }
 
-    private void startAboutActivity(){
+    private void startAboutActivity() {
         Intent aboutActivity = new Intent(MainActivity.this, AboutAppActivity.class);
         startActivity(aboutActivity);
     }

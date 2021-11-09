@@ -9,15 +9,15 @@ public class RetrofitClient {
     private static final String URL_BASE = "http://api.openweathermap.org/";
     private static RetrofitClient retrofitClient;
 
-    private RetrofitClient(){
+    private RetrofitClient() {
         retrofit2 = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .baseUrl(URL_BASE).build();
     }
 
-    public static RetrofitClient getInstance(){
-        if(retrofitClient==null){
+    public static RetrofitClient getInstance() {
+        if (retrofitClient==null) {
             retrofitClient = new RetrofitClient();
         }
         return retrofitClient;

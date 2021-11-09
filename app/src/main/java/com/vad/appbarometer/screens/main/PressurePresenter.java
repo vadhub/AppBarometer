@@ -25,7 +25,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class PressurePresenter implements PresenterView{
+public class PressurePresenter implements PresenterView {
 
     public static final String API_KEY ="e19089086c20c76bdc3bfbbe2a6ad29c";
     private final GPSdata gps;
@@ -46,7 +46,7 @@ public class PressurePresenter implements PresenterView{
     @Override
     public void response(float lat, float lon) {
 
-        disposable =RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
+        disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).
                     subscribe(
@@ -93,8 +93,8 @@ public class PressurePresenter implements PresenterView{
         });
     }
 
-    public void disposableDispose(){
-        if(compositeDisposable!=null){
+    public void disposableDispose() {
+        if (compositeDisposable!=null) {
             compositeDisposable.dispose();
         }
     }
