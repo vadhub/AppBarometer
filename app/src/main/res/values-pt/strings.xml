@@ -5,12 +5,10 @@
     <string name="permission_deny">Negar</string>
     <string name="permission_ok">Garantido</string>
     <string name="permission_name">Permissão necessária</string>
-
-    <string-array name="bar">
-        <item>hPa</item>
-        <item>mmHg</item>
-    </string-array>
     <string name="version">"Versão: "</string>
     <string name="share">para compartilhar com amigos</string>
     <string name="copy">texto copiado</string>
+
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
 </resources>

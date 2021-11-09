@@ -5,12 +5,10 @@
     <string name="permission_ok">Ок</string>
     <string name="permission_deny">Нет</string>
     <string name="permission_message_body">Разрешить доступ к геоданным</string>
-
-    <string-array name="bar">
-        <item>гПа</item>
-        <item>мм рс. ст.</item>
-    </string-array>
     <string name="version">"Версия: "</string>
     <string name="share">Поделиться с друзьями</string>
     <string name="copy">текст скопирован</string>
+
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
 </resources>

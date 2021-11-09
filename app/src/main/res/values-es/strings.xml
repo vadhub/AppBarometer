@@ -5,12 +5,10 @@
     <string name="permission_ok" >Ok</string>
     <string name="permission_deny">No</string>
     <string name="permission_message_body">Permitir el acceso a geodatos</string>
-
-    <string-array name="bar">
-        <item>hPa</item>
-        <item>mmHg</item>
-    </string-array>
     <string name="copy">texto copiado</string>
     <string name="share">Compartir con amigos</string>
     <string name="version">"Versión: "</string>
+
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
 </resources>
