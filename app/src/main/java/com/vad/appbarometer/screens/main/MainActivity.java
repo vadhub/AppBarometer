@@ -52,13 +52,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
 
-    private Spinner spinnerBar;
-    private String changMBar;
     private int isHg = 0;
     private float value = 0;
 
     private AdView mAdView;
-    private String[] barChange;
 
     private SaveState saveState;
     private PressurePresenter presenter;
@@ -106,16 +103,8 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
         mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
-        spinnerBar = (Spinner) findViewById(R.id.spinnerChangeMeter);
-
-        //adapter for spinner
-        ArrayAdapter<?> adapter = ArrayAdapter.createFromResource(this, R.array.bar, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerBar.setAdapter(adapter);
 
         mBarText = (TextView) findViewById(R.id.mBarText);
-
-        barChange = getResources().getStringArray(R.array.bar);
 
         imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
@@ -131,32 +120,14 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         }
 
         if (saveState.getStatePres()==0) {
-            spinnerBar.setSelection(0);
-            changMBar = barChange[0];
             isHg=0;
         } else {
-            spinnerBar.setSelection(1);
-            changMBar = barChange[1];
             isHg=1;
         }
 
-        spinnerBar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                changMBar = barChange[i];
-                isHg=i;
-                setUnit(i, value);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
     }
 
-    private void visionPressure(float pres) {
+    private void visionPressure(float pres, String changMBar) {
         mBarText.setText(String.format("%.2f " + changMBar, pres));
         AnimationSets aset = new AnimationSets();
         AnimationSet animationSet = aset.animationRotate(MathSets.getGradus(pres));
