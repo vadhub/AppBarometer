@@ -51,12 +51,8 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
-
     private int isHg = 0;
-    private float value = 0;
-
     private AdView mAdView;
-
     private SaveState saveState;
     private PressurePresenter presenter;
     private Sensor mPressure;
@@ -119,10 +115,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
             checkPermission();
         }
 
-        if (saveState.getStatePres()==0) {
-            isHg=0;
+        if (saveState.getStatePres() == 0) {
+            isHg = 0;
         } else {
-            isHg=1;
+            isHg = 1;
         }
 
     }
@@ -150,9 +146,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (presenter!=null) {
+        if (presenter != null) {
             presenter.disposableDispose();
         }
+        mSensorManage.unregisterListener(this);
     }
 
     @Override
@@ -186,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void setPressure(float value) {
-        this.value = value;
         setUnit(value);
         setVisibleState();
     }
@@ -197,21 +193,11 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     }
 
     private void setUnit(float value) {
-        if (changMBar.equals(barChange[0])) {
-            visionPressure(value);
+        if (saveState.getStatePres() == 0) {
+            visionPressure(value, "hPa");
             imageViewGauge.setImageDrawable(getDrawable(guage));
         } else {
-            visionPressure(MathSets.convertToMmHg(value));
-            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-        }
-    }
-
-    private void setUnit(int i, float value) {
-        if (i == 0) {
-            visionPressure(value);
-            imageViewGauge.setImageDrawable(getDrawable(guage));
-        } else {
-            visionPressure(MathSets.convertToMmHg(value));
+            visionPressure(MathSets.convertToMmHg(value), "mmHg");
             imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
         }
     }
@@ -224,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        value = sensorEvent.values[0];
         setUnit(sensorEvent.values[0]);
         mSensorManage.unregisterListener(this);
         setVisibleState();
@@ -245,11 +230,18 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.about_button) {
-            startAboutActivity();
-            return true;
+        switch (id) {
+            case R.id.about_button:
+                startAboutActivity();
+                break;
+            case R.id.mmbar:
+                isHg = 1;
+                break;
+            case R.id.hpa:
+                isHg = 0;
+                break;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private void startAboutActivity() {
