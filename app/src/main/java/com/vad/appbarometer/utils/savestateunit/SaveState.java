@@ -16,7 +16,7 @@ public class SaveState {
     }
 
     //save state hpa or mmhg
-    public void saveStatePres(int type){
+    public void saveStatePres(int type) {
         prefer = context.getSharedPreferences("pressure_state_app", MODE_PRIVATE);
         SharedPreferences.Editor ed = prefer.edit();
         ed.putInt("type_pressure_", type);
@@ -24,7 +24,7 @@ public class SaveState {
     }
 
     //get state hpa or mmhg
-    public int getStatePres(){
+    public int getStatePres() {
         prefer = context.getSharedPreferences("pressure_state_app", MODE_PRIVATE);
         return prefer.getInt("type_pressure_", 0);
     }

@@ -5,12 +5,12 @@ public class MathSets {
 
     public final static int STANDART_GRAD = 10;
 
-    public static float getGradus(float pressure){
+    public static float getGradus(float pressure) {
         float v = 0;
         float coef = 3;
-        if(pressure>1000){
+        if (pressure>1000) {
             v = (pressure - 1000) * coef;
-        } else{
+        } else {
             v = -(1000-pressure)*coef;
         }
         return v;

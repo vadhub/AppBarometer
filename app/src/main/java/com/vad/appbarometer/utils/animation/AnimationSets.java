@@ -6,7 +6,7 @@ import android.view.animation.RotateAnimation;
 
 public class AnimationSets {
 
-    public AnimationSet animationRotate(float degrees){
+    public AnimationSet animationRotate(float degrees) {
         AnimationSet animSet = new AnimationSet(true);
         animSet.setInterpolator(new DecelerateInterpolator());
         animSet.setFillAfter(true);

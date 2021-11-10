@@ -28,7 +28,7 @@ public class GPSdata {
         //fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
     }
 
-    public LocationRequest getLocationRequest(){
+    public LocationRequest getLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
@@ -40,17 +40,17 @@ public class GPSdata {
     @SuppressLint("MissingPermission")
     public void getLocation() {
 
-        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {
                     Location location = null;
-                    if(task.isSuccessful() && task.getResult()!=null){
+                    if (task.isSuccessful() && task.getResult()!=null) {
                         location  = task.getResult();
                     }
                     if (location != null) {
                             view.response((float) location.getLatitude(),(float) location.getLongitude());
-                    }else{
+                    } else {
                         getLocationCallback();
                     }
                 }
@@ -59,7 +59,7 @@ public class GPSdata {
     }
 
     @SuppressLint("MissingPermission")
-    private void getLocationCallback(){
+    private void getLocationCallback() {
         LocationCallback locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
