@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
     private int isHg = 0;
+    private static float pressure = 0;
     private AdView mAdView;
     private SaveState saveState;
     private PressurePresenter presenter;
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
-
         } else {
             presenter.displayLocationSettingsRequest();
         }
@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         } else {
             isHg = 1;
         }
-
     }
 
     private void visionPressure(float pres, String changMBar) {
@@ -183,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void setPressure(float value) {
+        pressure = value;
         setUnit(value);
         setVisibleState();
     }
@@ -202,6 +202,16 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         }
     }
 
+    private void setUnit(float value, int type) {
+        if (type == 0) {
+            visionPressure(value, "hPa");
+            imageViewGauge.setImageDrawable(getDrawable(guage));
+        } else {
+            visionPressure(MathSets.convertToMmHg(value), "mmHg");
+            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
+        }
+    }
+
     @Override
     public GoogleApiClient getGoogleApiClient() {
         return new GoogleApiClient.Builder(this)
@@ -210,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        pressure = sensorEvent.values[0];
         setUnit(sensorEvent.values[0]);
         mSensorManage.unregisterListener(this);
         setVisibleState();
@@ -236,9 +247,11 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
                 break;
             case R.id.mmbar:
                 isHg = 1;
+                setUnit(pressure);
                 break;
             case R.id.hpa:
                 isHg = 0;
+                setUnit(pressure);
                 break;
         }
         return true;
