@@ -115,11 +115,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
             checkPermission();
         }
 
-        if (saveState.getStatePres() == 0) {
-            isHg = 0;
-        } else {
-            isHg = 1;
-        }
+        isHg = saveState.getStatePres();
     }
 
     private void visionPressure(float pres, String changMBar) {
@@ -247,11 +243,11 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
                 break;
             case R.id.mmbar:
                 isHg = 1;
-                setUnit(pressure);
+                setUnit(pressure, isHg);
                 break;
             case R.id.hpa:
                 isHg = 0;
-                setUnit(pressure);
+                setUnit(pressure, isHg);
                 break;
         }
         return true;
