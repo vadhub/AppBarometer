@@ -1,9 +1,8 @@
 package com.vad.appbarometer.screens.main;
 
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.vad.appbarometer.screens.GoogleApi;
 
-public interface PressureView {
+public interface PressureView extends GoogleApi {
     void setPressure(float value);
     void showError(String str);
-    GoogleApiClient getGoogleApiClient();
 }
