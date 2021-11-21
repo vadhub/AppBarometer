@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -14,20 +13,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationSet;
-
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -41,8 +34,6 @@ import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
-
-
 import static com.vad.appbarometer.R.drawable.guage;
 
 public class MainActivity extends AppCompatActivity implements PressureView, SensorEventListener {
@@ -58,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private PressurePresenter presenter;
     private Sensor mPressure;
     private SensorManager mSensorManage;
+    private TextView textViewIndicator;
 
     private boolean isActive = false;
 
@@ -106,13 +98,17 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
+        textViewIndicator = (TextView) findViewById(R.id.textViewIndicator);
+
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
         activeGauge(imageViewGauge, false);
 
+        textViewIndicator.setText(getResources().getText(R.string.indicateSensor));
         if (mPressure == null) {
             presenter = new PressurePresenter(this, this);
             checkPermission();
+            textViewIndicator.setText(getResources().getText(R.string.indicateInternet));
         }
 
         isHg = saveState.getStatePres();
