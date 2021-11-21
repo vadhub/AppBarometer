@@ -10,5 +10,7 @@
 
     <string name="hpa">hPa</string>
     <string name="mmHg">mmHg</string>
+    <string name="indicateInternet">Internet</string>
+    <string name="indicateSensor">Sensor</string>
 
 </resources>

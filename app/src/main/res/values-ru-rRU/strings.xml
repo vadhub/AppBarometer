@@ -8,6 +8,8 @@
     <string name="version">"Версия: "</string>
     <string name="share">Поделиться с друзьями</string>
     <string name="copy">текст скопирован</string>
+    <string name="indicateInternet">Интернет</string>
+    <string name="indicateSensor">Датчик</string>
 
     <string name="hpa">hPa</string>
     <string name="mmHg">mmHg</string>
