@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.LocationManager;
 
+import androidx.appcompat.graphics.drawable.AnimatedStateListDrawableCompat;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -16,11 +18,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.vad.appbarometer.R;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -46,17 +50,22 @@ public class PressurePresenter implements PresenterView {
     @Override
     public void response(float lat, float lon) {
 
-        disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
+        if (view.isOnline()) {
+            disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread()).
-                    subscribe(
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
                             weatherPojo -> {
                                 view.setPressure(weatherPojo.getMain().getPressure());
-                                },
+                            },
                             throwable -> {
                                 view.showError(throwable.getMessage());
                             });
-        compositeDisposable.add(disposable);
+
+            compositeDisposable.add(disposable);
+        } else {
+            view.showError(activity.getString(R.string.network_connection));
+        }
     }
 
     public void displayLocationSettingsRequest() {
