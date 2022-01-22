@@ -13,4 +13,5 @@
 
     <string name="hpa">hPa</string>
     <string name="mmHg">mmHg</string>
+    <string name="network_connection">сетевое соединение недоступно</string>
 </resources>

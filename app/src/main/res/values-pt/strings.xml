@@ -13,4 +13,5 @@
     <string name="mmHg">mmHg</string>
     <string name="indicateSensor">Sensor</string>
     <string name="indicateInternet">Internet</string>
+    <string name="network_connection">conexão de rede não disponível</string>
 </resources>
