@@ -36,34 +36,49 @@
 
             <TextView
                 android:id="@+id/textViewVersion"
+                style="@style/TextViewAboutActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Version "
-                android:textSize="16sp" />
+                android:text="Version " />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
 
             <TextView
                 android:id="@+id/textViewTweeter"
+                style="@style/TextViewAboutActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="twitterClick"
-                android:text="Tweeter"
-                android:textSize="16sp" />
+                android:text="Tweeter" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
 
             <TextView
                 android:id="@+id/textViewShare"
+                style="@style/TextViewAboutActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="shareClick"
-                android:text="Share"
-                android:textSize="16sp" />
+                android:text="Share" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
 
             <TextView
                 android:id="@+id/textViewEmail"
+                style="@style/TextViewAboutActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onCopy"
-                android:text="TextView"
-                android:textSize="16sp" />
+                android:text="Email" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

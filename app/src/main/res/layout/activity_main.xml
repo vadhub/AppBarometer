@@ -14,8 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/guage">
-    </ImageView>
+        app:srcCompat="@drawable/guage"></ImageView>
 
     <ImageView
         android:id="@+id/imageViewArrow"
@@ -33,11 +32,11 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:theme="@style/CircularProgress"
-        android:visibility="visible"
-        android:indeterminateOnly="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminateOnly="true"
+        android:theme="@style/CircularProgress"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/mBarText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,6 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

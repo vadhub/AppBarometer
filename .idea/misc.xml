@@ -4,7 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.2152777777777778" />
-        <entry key="app/src/main/res/layout/activity_about_app.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_about_app.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/menu/about_app_button.xml" value="0.20092592592592592" />
         <entry key="app/src/main/res/menu/menu_chanhe_type_pressure.xml" value="0.3347222222222222" />

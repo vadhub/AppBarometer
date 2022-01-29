@@ -17,4 +17,10 @@
     <style name="CircularProgress" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/teal_700</item>
     </style>
+
+    <style name="TextViewAboutActivity" parent="Theme.AppCompat.Light">
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textSize">16dp</item>
+    </style>
 </resources>
