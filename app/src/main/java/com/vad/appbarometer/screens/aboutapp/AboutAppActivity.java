@@ -44,17 +44,17 @@ public class AboutAppActivity extends AppCompatActivity {
 
         try {
             String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            textVersion.setText(getString(R.string.version)+version);
+            textVersion.setText(getString(R.string.version) + version);
             textVersion.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_info_24, 0, 0, 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
         textTweeter.setText("@vadhubt");
-        textTweeter.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_check_circle_outline_24, 0 ,0 ,0);
+        textTweeter.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_check_circle_outline_24, 0, 0, 0);
 
         textShare.setText(R.string.share);
-        textShare.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_share_24, 0, 0,0);
+        textShare.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_share_24, 0, 0, 0);
 
     }
 
@@ -81,7 +81,7 @@ public class AboutAppActivity extends AppCompatActivity {
         share();
     }
 
-    private void openTwitter(){
+    private void openTwitter() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/vadhubt"));
         startActivity(browserIntent);
     }

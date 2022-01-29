@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -37,6 +39,7 @@ import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
+
 import static com.vad.appbarometer.R.drawable.guage;
 
 public class MainActivity extends AppCompatActivity implements PressureView, SensorEventListener {
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==RequestCodes.REQUEST_CHECK_SETTINGS) {
+        if (requestCode == RequestCodes.REQUEST_CHECK_SETTINGS) {
             checkPermission();
         }
     }
@@ -184,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void showError(String str) {
-        Toast.makeText(this, ""+str, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "" + str, Toast.LENGTH_LONG).show();
     }
 
     @Override

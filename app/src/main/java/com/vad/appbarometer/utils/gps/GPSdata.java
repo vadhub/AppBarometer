@@ -45,11 +45,11 @@ public class GPSdata {
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {
                     Location location = null;
-                    if (task.isSuccessful() && task.getResult()!=null) {
-                        location  = task.getResult();
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        location = task.getResult();
                     }
                     if (location != null) {
-                            view.response((float) location.getLatitude(),(float) location.getLongitude());
+                        view.response((float) location.getLatitude(), (float) location.getLongitude());
                     } else {
                         getLocationCallback();
                     }

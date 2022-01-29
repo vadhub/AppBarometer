@@ -17,13 +17,13 @@ public class RetrofitClient {
     }
 
     public static RetrofitClient getInstance() {
-        if (retrofitClient==null) {
+        if (retrofitClient == null) {
             retrofitClient = new RetrofitClient();
         }
         return retrofitClient;
     }
 
-    public JsonPlaceHolder getJsonApi(){
+    public JsonPlaceHolder getJsonApi() {
         return retrofit2.create(JsonPlaceHolder.class);
     }
 }

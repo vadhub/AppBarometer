@@ -12,7 +12,7 @@ public class SaveState {
     private Context context;
 
     public SaveState(Context context) {
-        this.context=context;
+        this.context = context;
     }
 
     //save state

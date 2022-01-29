@@ -31,7 +31,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class PressurePresenter implements PresenterView {
 
-    public static final String API_KEY ="e19089086c20c76bdc3bfbbe2a6ad29c";
+    public static final String API_KEY = "e19089086c20c76bdc3bfbbe2a6ad29c";
     private final GPSdata gps;
     private final PressureView view;
     private final Activity activity;
@@ -39,7 +39,7 @@ public class PressurePresenter implements PresenterView {
     private CompositeDisposable compositeDisposable;
 
     public PressurePresenter(PressureView view, Activity activity) {
-        this.view=view;
+        this.view = view;
         this.activity = activity;
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
         LocationManager mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
@@ -103,12 +103,12 @@ public class PressurePresenter implements PresenterView {
     }
 
     public void disposableDispose() {
-        if (compositeDisposable!=null) {
+        if (compositeDisposable != null) {
             compositeDisposable.dispose();
         }
     }
 
-    public void setCoordinate(){
+    public void setCoordinate() {
         gps.getLocation();
     }
 
