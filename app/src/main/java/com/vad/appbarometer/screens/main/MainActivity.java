@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         mBanner.loadAd(adRequest);
 
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mPressure = null;//mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
 
         mBarText = (TextView) findViewById(R.id.mBarText);
