@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".screens.main.MainActivity">
 
+    <TextView
+        android:id="@+id/textViewIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
@@ -14,21 +24,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/guage"></ImageView>
+        app:srcCompat="@drawable/guage"/>
 
     <ImageView
         android:id="@+id/imageViewArrow"
         android:layout_width="46dp"
         android:layout_height="244dp"
         android:layout_marginBottom="24dp"
-        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
         android:paddingBottom="40dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="@id/imageView"
         app:layout_constraintEnd_toEndOf="@id/imageView"
         app:layout_constraintStart_toStartOf="@id/imageView"
         app:layout_constraintTop_toTopOf="@id/imageView"
-        app:srcCompat="@drawable/arrowv2" />
+        app:srcCompat="@drawable/arrowv2"
+        tools:ignore="RtlSymmetry" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -42,19 +53,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-
-        app:adSize="BANNER"
-        app:adUnitId="ca-app-pub-5356301729869498/7060116576"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
-
     <TextView
         android:id="@+id/mBarText"
         android:layout_width="wrap_content"
@@ -66,14 +64,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <TextView
-        android:id="@+id/textViewIndicator"
-        android:layout_width="wrap_content"
+    <com.yandex.mobile.ads.banner.BannerAdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
