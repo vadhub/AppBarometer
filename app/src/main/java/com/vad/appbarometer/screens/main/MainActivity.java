@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     }
 
     @Override
-    public boolean isOnline() {
+    public boolean isDataFromInternet() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();

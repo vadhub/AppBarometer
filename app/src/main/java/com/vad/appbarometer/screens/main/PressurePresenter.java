@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.LocationManager;
 
-import androidx.appcompat.graphics.drawable.AnimatedStateListDrawableCompat;
-
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -24,7 +22,6 @@ import com.vad.appbarometer.utils.gps.GPSdata;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -35,8 +32,7 @@ public class PressurePresenter implements PresenterView {
     private final GPSdata gps;
     private final PressureView view;
     private final Activity activity;
-    private Disposable disposable;
-    private CompositeDisposable compositeDisposable;
+    private final CompositeDisposable compositeDisposable;
 
     public PressurePresenter(PressureView view, Activity activity) {
         this.view = view;
@@ -50,8 +46,8 @@ public class PressurePresenter implements PresenterView {
     @Override
     public void response(float lat, float lon) {
 
-        if (view.isOnline()) {
-            disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
+        if (view.isDataFromInternet()) {
+            Disposable disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
