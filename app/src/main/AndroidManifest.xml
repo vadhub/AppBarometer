@@ -8,8 +8,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:foregroundServiceType="location"
         android:icon="@mipmap/ic_launcher"
@@ -17,17 +19,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppBarometer"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="m">
+        android:usesCleartextTraffic="true">
+
         <activity
             android:name=".screens.aboutapp.AboutAppActivity"
             android:exported="true" />
 
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-5356301729869498~2382504960" />
-
-        <activity android:name=".screens.main.MainActivity"
+        <activity
+            android:name=".screens.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
