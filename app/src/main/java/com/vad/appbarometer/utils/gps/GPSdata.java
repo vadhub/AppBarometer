@@ -11,21 +11,18 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.screens.main.PresenterView;
 
 public class GPSdata {
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationManager mLocationManager;
-    private PresenterView view;
+    private final FusedLocationProviderClient fusedLocationProviderClient;
+    private final LocationManager mLocationManager;
+    private final PresenterView view;
 
     public GPSdata(FusedLocationProviderClient fusedLocationProviderClient, LocationManager mLocationManager, PresenterView view) {
         this.fusedLocationProviderClient = fusedLocationProviderClient;
         this.mLocationManager = mLocationManager;
         this.view = view;
-        //fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
     }
 
     public LocationRequest getLocationRequest() {
@@ -33,7 +30,6 @@ public class GPSdata {
         locationRequest.setInterval(1000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        //locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         return locationRequest;
     }
 
@@ -41,18 +37,15 @@ public class GPSdata {
     public void getLocation() {
 
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    Location location = null;
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        location = task.getResult();
-                    }
-                    if (location != null) {
-                        view.response((float) location.getLatitude(), (float) location.getLongitude());
-                    } else {
-                        getLocationCallback();
-                    }
+            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                Location location = null;
+                if (task.isSuccessful() && task.getResult() != null) {
+                    location = task.getResult();
+                }
+                if (location != null) {
+                    view.response((float) location.getLatitude(), (float) location.getLongitude());
+                } else {
+                    getLocationCallback();
                 }
             });
         }
