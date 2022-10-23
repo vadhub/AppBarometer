@@ -26,11 +26,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.vad.appbarometer.R;
@@ -39,6 +34,9 @@ import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
+import com.yandex.mobile.ads.banner.AdSize;
+import com.yandex.mobile.ads.banner.BannerAdView;
+import com.yandex.mobile.ads.common.AdRequest;
 
 import static com.vad.appbarometer.R.drawable.guage;
 
@@ -50,12 +48,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private ProgressBar progressBar;
     private int isHg = 0;
     private static float pressure = 0;
-    private AdView mAdView;
     private SaveState saveState;
     private PressurePresenter presenter;
     private Sensor mPressure;
     private SensorManager mSensorManage;
-    private TextView textViewIndicator;
 
     private boolean isActive = false;
 
@@ -84,18 +80,14 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-
-            }
-        });
-        mAdView = findViewById(R.id.adView);
+        BannerAdView mBanner = (BannerAdView) findViewById(R.id.adView);
+        mBanner.setAdUnitId("R-M-1980164-1");
+        mBanner.setAdSize(AdSize.stickySize(AdSize.FULL_SCREEN.getWidth()));
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        mBanner.loadAd(adRequest);
 
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressure = null;//mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
 
         mBarText = (TextView) findViewById(R.id.mBarText);
@@ -104,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         imageViewGauge = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        textViewIndicator = (TextView) findViewById(R.id.textViewIndicator);
+        TextView textViewIndicator = (TextView) findViewById(R.id.textViewIndicator);
 
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);

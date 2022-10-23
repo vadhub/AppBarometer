@@ -3,23 +3,22 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.vad.appbarometer"
         minSdkVersion 24
-        targetSdkVersion 32
-        versionCode 17
-        versionName "1.6.8"
+        targetSdkVersion 33
+        versionCode 20
+        versionName "1.7.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -40,9 +39,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
-
+    implementation 'com.yandex.android:mobileads:5.3.0'
     implementation "com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0"
-    implementation 'com.google.android.gms:play-services-ads:20.5.0'
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
 
