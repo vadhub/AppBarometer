@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void showError(String str) {
-        Toast.makeText(this, "" + str, Toast.LENGTH_LONG).show();
+        Toast.makeText(this,  str+"", Toast.LENGTH_LONG).show();
     }
 
     @Override
