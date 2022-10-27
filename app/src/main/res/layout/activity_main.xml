@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".screens.main.MainActivity">
+    tools:context=".screens.main.MainActivity"
+    android:id="@+id/main">
 
     <TextView
         android:id="@+id/textViewIndicator"

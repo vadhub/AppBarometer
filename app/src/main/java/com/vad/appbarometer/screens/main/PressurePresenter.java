@@ -28,15 +28,16 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class PressurePresenter implements PresenterView {
 
-    public static final String API_KEY = "e19089086c20c76bdc3bfbbe2a6ad29c";
     private final GPSdata gps;
     private final PressureView view;
     private final Activity activity;
     private final CompositeDisposable compositeDisposable;
+    private final String key;
 
-    public PressurePresenter(PressureView view, Activity activity) {
+    public PressurePresenter(PressureView view, Activity activity, String key) {
         this.view = view;
         this.activity = activity;
+        this.key = key;
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
         LocationManager mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         gps = new GPSdata(fusedLocationProviderClient, mLocationManager, this);
@@ -47,7 +48,7 @@ public class PressurePresenter implements PresenterView {
     public void response(float lat, float lon) {
 
         if (view.isDataFromInternet()) {
-            Disposable disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, API_KEY)
+            Disposable disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, key)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

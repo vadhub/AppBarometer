@@ -9,6 +9,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -104,7 +105,12 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
         textViewIndicator.setText(getResources().getText(R.string.indicateSensor));
         if (mPressure == null) {
-            presenter = new PressurePresenter(this, this);
+            try {
+                ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+                presenter = new PressurePresenter(this, this, applicationInfo.metaData.getString("keyValue"));
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
             checkPermission();
             textViewIndicator.setText(getResources().getText(R.string.indicateInternet));
         }
@@ -179,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
 
     @Override
     public void showError(String str) {
-        Toast.makeText(this,  str+"", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, str + "", Toast.LENGTH_LONG).show();
     }
 
     @Override
