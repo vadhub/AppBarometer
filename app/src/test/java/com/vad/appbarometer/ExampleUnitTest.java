@@ -7,10 +7,6 @@ import static org.junit.Assert.*;
 import com.vad.appbarometer.utils.math.MathSets;
 
 public class ExampleUnitTest {
-//    @Test
-//    public void addition_isCorrect() {
-//        assertEquals(4, 2 + 2);
-//    }
 
     private static final double DELTA = 0.1;
 
