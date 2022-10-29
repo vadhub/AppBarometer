@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         mBarText.setText(String.format("%.2f " + changMBar, pres));
         AnimationSets aset = new AnimationSets();
         AnimationSet animationSet = aset.animationRotate(MathSets.getGradus(pres));
+        System.out.println(animationSet.getAnimations().get(0).hasStarted()+"------------------------------------");
         imageViewArrow.startAnimation(animationSet);
     }
 
