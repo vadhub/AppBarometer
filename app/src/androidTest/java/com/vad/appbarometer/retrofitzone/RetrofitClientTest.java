@@ -23,7 +23,8 @@ public class RetrofitClientTest {
         ApplicationInfo applicationInfo = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
 
         RetrofitClient.getInstance().getJsonApi().getData(10.233f, 12.233f, applicationInfo.metaData.getString("keyValue"))
-                .subscribe(Assert::assertNotNull);
+                .subscribe(weatherPojo -> {
+                    assertNotNull(weatherPojo);});
     }
 
     @After

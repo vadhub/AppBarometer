@@ -25,9 +25,4 @@ public class ExampleUnitTest {
         assertEquals(-2997, MathSets.getGradus(1), DELTA);
     }
 
-    @Test
-    public void degreeRotation_isCorrect() {
-
-    }
-
 }
