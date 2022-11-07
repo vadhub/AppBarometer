@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.LocationManager;
 
+import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -28,7 +29,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class PressurePresenter implements PresenterView {
 
-    private final GPSdata gps;
     private final PressureView view;
     private final Activity activity;
     private final CompositeDisposable compositeDisposable;
@@ -38,9 +38,6 @@ public class PressurePresenter implements PresenterView {
         this.view = view;
         this.activity = activity;
         this.key = key;
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
-        LocationManager mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        gps = new GPSdata(fusedLocationProviderClient, mLocationManager, this);
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -65,45 +62,10 @@ public class PressurePresenter implements PresenterView {
         }
     }
 
-    public void displayLocationSettingsRequest() {
-        GoogleApiClient apiClient = view.getGoogleApiClient();
-        LocationRequest location = gps.getLocationRequest();
-        apiClient.connect();
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(location);
-        builder.setAlwaysShow(true);
-
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(apiClient, builder.build());
-        result.setResultCallback(result1 -> {
-            final Status status = result1.getStatus();
-
-            switch (status.getStatusCode()) {
-                case LocationSettingsStatusCodes.SUCCESS:
-                    setCoordinate();
-                    break;
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    try {
-                        // Show the dialog by calling startResolutionForResult(), and check the result
-                        // in onActivityResult().
-                        status.startResolutionForResult(activity, RequestCodes.REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException e) {
-                        view.showError(e.getMessage());
-                    }
-                    break;
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    view.showError("GPS unable");
-                    break;
-            }
-        });
-    }
-
     public void disposableDispose() {
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
         }
-    }
-
-    public void setCoordinate() {
-        gps.getLocation();
     }
 
 

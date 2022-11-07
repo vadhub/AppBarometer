@@ -26,11 +26,7 @@ public class GPSdata {
     }
 
     public LocationRequest getLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(1000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
+        return LocationRequest.create();
     }
 
     @SuppressLint("MissingPermission")
