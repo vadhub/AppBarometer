@@ -4,13 +4,10 @@ package com.vad.appbarometer.screens.main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
-import android.location.LocationListener;
 import android.location.LocationManager;
-
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;

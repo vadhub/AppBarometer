@@ -19,7 +19,11 @@ public class GPSdata {
     }
 
     public LocationRequest getLocationRequest() {
-        return LocationRequest.create();
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
     }
 
     @SuppressLint("MissingPermission")
