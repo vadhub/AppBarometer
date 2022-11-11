@@ -5,12 +5,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
+
 import com.google.android.gms.location.LocationRequest;
 import com.vad.appbarometer.screens.main.Response;
 
 public class GPSdata {
 
     private final LocationManager mLocationManager;
+    private LocationListener mLocationListenerGPS;
     private final Response response;
 
     public GPSdata(LocationManager mLocationManager, Response view) {
@@ -31,9 +34,10 @@ public class GPSdata {
 
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-            LocationListener mLocationListenerGPS = new LocationListener() {
+            mLocationListenerGPS = new LocationListener() {
                 @SuppressLint("SetTextI18n")
                 public void onLocationChanged(Location location) {
+                    Log.d("--Respons", "res");
                     response.toResponse((float) location.getLatitude(), (float) location.getLongitude());
                 }
 
@@ -50,7 +54,10 @@ public class GPSdata {
 
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 0, mLocationListenerGPS);
         }
+    }
 
+    public void removeUpdateGPS() {
+        mLocationManager.removeUpdates(mLocationListenerGPS);
     }
 
 }

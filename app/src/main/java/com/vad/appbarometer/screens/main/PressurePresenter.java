@@ -97,6 +97,7 @@ public class PressurePresenter implements Response {
         }
 
         if (gps != null) {
+            gps.removeUpdateGPS();
             gps = null;
         }
 
