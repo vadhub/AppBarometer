@@ -2,27 +2,23 @@ package com.vad.appbarometer.utils.gps;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Looper;
+import android.os.Bundle;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.vad.appbarometer.screens.main.PresenterView;
+import com.vad.appbarometer.screens.main.Response;
 
 public class GPSdata {
 
-    private final FusedLocationProviderClient fusedLocationProviderClient;
     private final LocationManager mLocationManager;
-    private final PresenterView view;
+    private LocationListener mLocationListenerGPS;
+    private final Response response;
 
-    public GPSdata(FusedLocationProviderClient fusedLocationProviderClient, LocationManager mLocationManager, PresenterView view) {
-        this.fusedLocationProviderClient = fusedLocationProviderClient;
+    public GPSdata(LocationManager mLocationManager, Response view) {
         this.mLocationManager = mLocationManager;
-        this.view = view;
+        this.response = view;
     }
 
     public LocationRequest getLocationRequest() {
@@ -37,31 +33,31 @@ public class GPSdata {
     public void getLocation() {
 
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
-                Location location = null;
-                if (task.isSuccessful() && task.getResult() != null) {
-                    location = task.getResult();
+
+            mLocationListenerGPS = new LocationListener() {
+                @SuppressLint("SetTextI18n")
+                public void onLocationChanged(Location location) {
+                    Log.d("--Respons", "res");
+                    response.toResponse((float) location.getLatitude(), (float) location.getLongitude());
                 }
-                if (location != null) {
-                    view.response((float) location.getLatitude(), (float) location.getLongitude());
-                } else {
-                    getLocationCallback();
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {
                 }
-            });
+
+                public void onProviderEnabled(String provider) {
+                }
+
+                public void onProviderDisabled(String provider) {
+
+                }
+            };
+
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 0, mLocationListenerGPS);
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private void getLocationCallback() {
-        LocationCallback locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Location location = locationResult.getLastLocation();
-                view.response((float) location.getLatitude(), (float) location.getLongitude());
-                fusedLocationProviderClient.removeLocationUpdates(this);
-            }
-        };
-        fusedLocationProviderClient.requestLocationUpdates(getLocationRequest(), locationCallback, Looper.myLooper());
+    public void removeUpdateGPS() {
+        mLocationManager.removeUpdates(mLocationListenerGPS);
     }
 
 }

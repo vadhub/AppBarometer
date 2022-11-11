@@ -1,3 +1,5 @@
+
+
 package com.vad.appbarometer.screens.main;
 
 import androidx.annotation.NonNull;
@@ -41,7 +43,7 @@ import com.yandex.mobile.ads.common.AdRequest;
 
 import static com.vad.appbarometer.R.drawable.guage;
 
-public class MainActivity extends AppCompatActivity implements PressureView, SensorEventListener {
+public class MainActivity extends AppCompatActivity implements PressureListener, SensorEventListener {
 
     private TextView mBarText;
     private ImageView imageViewArrow;
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         if (mPressure == null) {
             try {
                 ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                presenter = new PressurePresenter(this, this, applicationInfo.metaData.getString("keyValue"));
+                presenter = new PressurePresenter(this, applicationInfo.metaData.getString("keyValue"));
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -129,22 +131,6 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     protected void onResume() {
         super.onResume();
         mSensorManage.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        saveState.saveStatePres(isHg);
-        mSensorManage.unregisterListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (presenter != null) {
-            presenter.disposableDispose();
-        }
-        mSensorManage.unregisterListener(this);
     }
 
     @Override
@@ -263,5 +249,22 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private void startAboutActivity() {
         Intent aboutActivity = new Intent(MainActivity.this, AboutAppActivity.class);
         startActivity(aboutActivity);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveState.saveStatePres(isHg);
+        mSensorManage.unregisterListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.disposableDispose();
+        }
+        mSensorManage.unregisterListener(this);
     }
 }
