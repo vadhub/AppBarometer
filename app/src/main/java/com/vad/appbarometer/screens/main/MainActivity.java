@@ -1,10 +1,11 @@
+
+
 package com.vad.appbarometer.screens.main;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
@@ -16,12 +17,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.vad.appbarometer.R;
 import com.vad.appbarometer.screens.aboutapp.AboutAppActivity;
@@ -45,13 +43,8 @@ import com.yandex.mobile.ads.common.AdRequest;
 
 import static com.vad.appbarometer.R.drawable.guage;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+public class MainActivity extends AppCompatActivity implements PressureListener, SensorEventListener {
 
-public class MainActivity extends AppCompatActivity implements PressureView, SensorEventListener {
-
-    private static final int REQUEST_GPS_CODE = 2345;
     private TextView mBarText;
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
@@ -62,37 +55,24 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private PressurePresenter presenter;
     private Sensor mPressure;
     private SensorManager mSensorManage;
-    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private boolean isActive = false;
 
-    private void getCoordinate() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
-                if (location != null) {
-                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                    try {
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(),1);
-                        Log.d("---lat", addresses.get(0).getLatitude()+"");
-                        Log.d("---lat", addresses.get(0).getLongitude()+"");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+    private void checkPermission() {
+        if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_GPS_CODE);
+            presenter.displayLocationSettingsRequest();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_GPS_CODE) {
+        if (requestCode == RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getCoordinate();
-            } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                presenter.displayLocationSettingsRequest();
             }
         }
     }
@@ -109,11 +89,8 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         AdRequest adRequest = new AdRequest.Builder().build();
         mBanner.loadAd(adRequest);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
         mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
-        getCoordinate();
         saveState = new SaveState(this);
 
         mBarText = (TextView) findViewById(R.id.mBarText);
@@ -132,11 +109,11 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         if (mPressure == null) {
             try {
                 ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                presenter = new PressurePresenter(this, this, applicationInfo.metaData.getString("keyValue"));
+                presenter = new PressurePresenter(this, applicationInfo.metaData.getString("keyValue"));
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-            getCoordinate();
+            checkPermission();
             textViewIndicator.setText(getResources().getText(R.string.indicateInternet));
         }
 
@@ -157,26 +134,10 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        saveState.saveStatePres(isHg);
-        mSensorManage.unregisterListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (presenter != null) {
-            presenter.disposableDispose();
-        }
-        mSensorManage.unregisterListener(this);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RequestCodes.REQUEST_CHECK_SETTINGS) {
-            getCoordinate();
+            checkPermission();
         }
     }
 
@@ -240,6 +201,11 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
         }
     }
 
+    @Override
+    public GoogleApiClient getGoogleApiClient() {
+        return new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API).build();
+    }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -283,5 +249,22 @@ public class MainActivity extends AppCompatActivity implements PressureView, Sen
     private void startAboutActivity() {
         Intent aboutActivity = new Intent(MainActivity.this, AboutAppActivity.class);
         startActivity(aboutActivity);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveState.saveStatePres(isHg);
+        mSensorManage.unregisterListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.disposableDispose();
+        }
+        mSensorManage.unregisterListener(this);
     }
 }

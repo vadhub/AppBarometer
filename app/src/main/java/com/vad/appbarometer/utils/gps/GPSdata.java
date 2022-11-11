@@ -11,15 +11,15 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.vad.appbarometer.screens.main.PresenterView;
+import com.vad.appbarometer.screens.main.Response;
 
 public class GPSdata {
 
     private final FusedLocationProviderClient fusedLocationProviderClient;
     private final LocationManager mLocationManager;
-    private final PresenterView view;
+    private final Response view;
 
-    public GPSdata(FusedLocationProviderClient fusedLocationProviderClient, LocationManager mLocationManager, PresenterView view) {
+    public GPSdata(FusedLocationProviderClient fusedLocationProviderClient, LocationManager mLocationManager, Response view) {
         this.fusedLocationProviderClient = fusedLocationProviderClient;
         this.mLocationManager = mLocationManager;
         this.view = view;
@@ -39,7 +39,7 @@ public class GPSdata {
                     location = task.getResult();
                 }
                 if (location != null) {
-                    view.response((float) location.getLatitude(), (float) location.getLongitude());
+                    view.toResponse((float) location.getLatitude(), (float) location.getLongitude());
                 } else {
                     getLocationCallback();
                 }
@@ -53,7 +53,7 @@ public class GPSdata {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
-                view.response((float) location.getLatitude(), (float) location.getLongitude());
+                view.toResponse((float) location.getLatitude(), (float) location.getLongitude());
                 fusedLocationProviderClient.removeLocationUpdates(this);
             }
         };
