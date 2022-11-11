@@ -51,9 +51,11 @@ public class PressurePresenter implements Response {
                     .subscribe(
                             weatherPojo -> {
                                 view.setPressure(weatherPojo.getMain().getPressure());
+                                gps.removeUpdateGPS();
                             },
                             throwable -> {
                                 view.showError(throwable.getMessage());
+                                gps.removeUpdateGPS();
                             });
 
             compositeDisposable.add(disposable);
@@ -97,7 +99,6 @@ public class PressurePresenter implements Response {
         }
 
         if (gps != null) {
-            gps.removeUpdateGPS();
             gps = null;
         }
 
