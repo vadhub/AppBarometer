@@ -4,6 +4,7 @@ package com.vad.appbarometer.screens.main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
+import android.location.LocationListener;
 import android.location.LocationManager;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,19 +27,20 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class PressurePresenter implements Response {
-    private final GPSdata gps;
+
+    private GPSdata gps;
     private final PressureListener view;
     private final Activity activity;
     private final CompositeDisposable compositeDisposable;
     private final String key;
+    private LocationManager mLocationManager;
 
     public PressurePresenter(Activity activity, String key) {
         this.view = ((MainActivity) activity);
         this.activity = activity;
         this.key = key;
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity);
-        LocationManager mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        gps = new GPSdata(fusedLocationProviderClient, mLocationManager, this);
+        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        gps = new GPSdata(mLocationManager, this);
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -76,7 +78,7 @@ public class PressurePresenter implements Response {
 
             switch (status.getStatusCode()) {
                 case LocationSettingsStatusCodes.SUCCESS:
-                    setCoordinate();
+                    gps.getLocation();
                     break;
                 case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                     try {
@@ -93,13 +95,18 @@ public class PressurePresenter implements Response {
     }
 
     public void disposableDispose() {
+        if (mLocationManager != null) {
+            mLocationManager = null;
+        }
+
+        if (gps != null) {
+            gps = null;
+        }
+
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
         }
     }
 
-    public void setCoordinate() {
-        gps.getLocation();
-    }
 
 }
