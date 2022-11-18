@@ -33,6 +33,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.vad.appbarometer.R;
 import com.vad.appbarometer.screens.aboutapp.AboutAppActivity;
+import com.vad.appbarometer.utils.ConfigurationCheck;
+import com.vad.appbarometer.utils.TypeImage;
+import com.vad.appbarometer.utils.UnitPressure;
 import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
@@ -41,20 +44,25 @@ import com.yandex.mobile.ads.banner.AdSize;
 import com.yandex.mobile.ads.banner.BannerAdView;
 import com.yandex.mobile.ads.common.AdRequest;
 
-import static com.vad.appbarometer.R.drawable.guage;
-
 public class MainActivity extends AppCompatActivity implements PressureListener, SensorEventListener {
 
     private TextView mBarText;
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
+
     private int isHg = 0;
     private static float pressure = 0;
+
     private SaveState saveState;
     private PressurePresenter presenter;
+
     private Sensor mPressure;
     private SensorManager mSensorManage;
+
+    private boolean isDarkTheme = false;
+    private UnitPressure unitPressure;
+    private TypeImage typeImage;
 
     private boolean isActive = false;
 
@@ -83,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
+        isDarkTheme = new ConfigurationCheck().checkDarkTheme(this);
+        typeImage = new TypeImage();
+
         BannerAdView mBanner = (BannerAdView) findViewById(R.id.adView);
         mBanner.setAdUnitId("R-M-1980164-1");
         mBanner.setAdSize(AdSize.stickySize(AdSize.FULL_SCREEN.getWidth()));
@@ -92,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
         mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
+        unitPressure = new UnitPressure();
 
         mBarText = (TextView) findViewById(R.id.mBarText);
 
@@ -162,10 +174,24 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         activeGauge(imageViewArrow, true);
     }
 
+    private void setGauge(int type, float pressure) {
+        unitPressure.setUnit(type,
+                () -> {
+                    //hgp
+                    visionPressure(pressure, "hPa");
+                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugehgpdark, R.drawable.gaugehgp);
+                },
+                () -> {
+                    //mmg
+                    visionPressure(MathSets.convertToMmHg(pressure), "mmHg");
+                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugemmhgdark, R.drawable.gaugemmhg);
+                });
+    }
+
     @Override
     public void setPressure(float value) {
         pressure = value;
-        setUnit(value);
+        setGauge(saveState.getStatePres(), pressure);
         setVisibleState();
     }
 
@@ -181,26 +207,6 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    private void setUnit(float value) {
-        if (saveState.getStatePres() == 0) {
-            visionPressure(value, "hPa");
-            imageViewGauge.setImageDrawable(getDrawable(guage));
-        } else {
-            visionPressure(MathSets.convertToMmHg(value), "mmHg");
-            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-        }
-    }
-
-    private void setUnit(float value, int type) {
-        if (type == 0) {
-            visionPressure(value, "hPa");
-            imageViewGauge.setImageDrawable(getDrawable(guage));
-        } else {
-            visionPressure(MathSets.convertToMmHg(value), "mmHg");
-            imageViewGauge.setImageDrawable(getDrawable(R.drawable.gaugehg));
-        }
-    }
-
     @Override
     public GoogleApiClient getGoogleApiClient() {
         return new GoogleApiClient.Builder(this)
@@ -210,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         pressure = sensorEvent.values[0];
-        setUnit(sensorEvent.values[0]);
+        setGauge(saveState.getStatePres(), pressure);
         mSensorManage.unregisterListener(this);
         setVisibleState();
     }
@@ -236,13 +242,14 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
                 break;
             case R.id.mmbar:
                 isHg = 1;
-                setUnit(pressure, isHg);
                 break;
             case R.id.hpa:
                 isHg = 0;
-                setUnit(pressure, isHg);
                 break;
         }
+
+        setGauge(isHg, pressure);
+
         return true;
     }
 
