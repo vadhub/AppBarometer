@@ -174,21 +174,24 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         activeGauge(imageViewArrow, true);
     }
 
-    @Override
-    public void setPressure(float value) {
-        pressure = value;
-        unitPressure.setUnit(saveState.getStatePres(),
+    private void setGauge(int type, float pressure) {
+        unitPressure.setUnit(type,
                 () -> {
                     //hgp
                     visionPressure(pressure, "hPa");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.guagehgpdark, R.drawable.guagehgp);
+                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugehgpdark, R.drawable.gaugehgp);
                 },
                 () -> {
                     //mmg
                     visionPressure(MathSets.convertToMmHg(pressure), "mmHg");
                     typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugemmhgdark, R.drawable.gaugemmhg);
                 });
+    }
 
+    @Override
+    public void setPressure(float value) {
+        pressure = value;
+        setGauge(saveState.getStatePres(), pressure);
         setVisibleState();
     }
 
@@ -213,18 +216,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         pressure = sensorEvent.values[0];
-        unitPressure.setUnit(saveState.getStatePres(),
-                () -> {
-                    //hgp
-                    visionPressure(pressure, "hPa");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.guagehgpdark, R.drawable.guagehgp);
-                },
-                () -> {
-                    //mmg
-                    visionPressure(MathSets.convertToMmHg(pressure), "mmHg");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugemmhgdark, R.drawable.gaugemmhg);
-                });
-
+        setGauge(saveState.getStatePres(), pressure);
         mSensorManage.unregisterListener(this);
         setVisibleState();
     }
@@ -256,17 +248,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
                 break;
         }
 
-        unitPressure.setUnit(isHg,
-                () -> {
-                    //hgp
-                    visionPressure(pressure, "hPa");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.guagehgpdark, R.drawable.guagehgp);
-                },
-                () -> {
-                    //mmg
-                    visionPressure(MathSets.convertToMmHg(pressure), "mmHg");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugemmhgdark, R.drawable.gaugemmhg);
-                });
+        setGauge(isHg, pressure);
 
         return true;
     }
