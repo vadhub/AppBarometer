@@ -6,6 +6,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertTrue;
 import androidx.test.core.app.ActivityScenario;
 
@@ -22,6 +23,7 @@ public class MainActivityTest {
 
     @Before
     public void setUp() {
+
         ActivityScenario.launch(MainActivity.class);
     }
 
@@ -43,9 +45,13 @@ public class MainActivityTest {
     }
 
     @Test
-    public void test_changeTypePressure() {
-        onView(withId(R.menu.about_app_button)).perform(click());
-        onView(withId(R.id.mmbar)).check(matches(isDisplayed()));
+    public void test_visibilityText() {
+        onView(withId(R.id.textViewIndicator)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_containTextPressure() {
+        onView(withId(R.id.mBarText)).check(matches(withText("1013.25 hPa")));
     }
 
     @Test

@@ -24,12 +24,7 @@ public class RetrofitClientTest {
 
         RetrofitClient.getInstance().getJsonApi().getData(10.233f, 12.233f, applicationInfo.metaData.getString("keyValue"))
                 .subscribe(weatherPojo -> {
-                    assertNotNull(weatherPojo);});
-    }
-
-    @After
-    public void tearDown() {
-        RxAndroidPlugins.reset();
-        RxJavaPlugins.reset();
+                    assertNotNull(weatherPojo.getMain().getPressure());
+                });
     }
 }
