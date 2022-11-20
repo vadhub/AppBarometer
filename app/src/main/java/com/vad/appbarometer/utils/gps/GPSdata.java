@@ -52,7 +52,7 @@ public class GPSdata {
                 }
             };
 
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 0, mLocationListenerGPS);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2, 100, mLocationListenerGPS);
         }
     }
 
