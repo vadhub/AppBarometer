@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">بارومتر التطبيق</string>
+    <string name="permission_deny">ينكر</string>
+    <string name="permission_ok">أكيد</string>
+    <string name="permission_message_body">السماح بالوصول إلى البيانات الجغرافية</string>
+    <string name="permission_name">الإذن مطلوب</string>
+    <string name="version">الإصدار:</string>
+    <string name="share">لمشاركتها مع الأصدقاء</string>
+    <string name="copy">تم نسخ النص</string>
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
+    <string name="indicateInternet">إنترنت</string>
+    <string name="indicateSensor">المستشعر</string>
+    <string name="network_connection">اتصال الشبكة غير متوفر</string>
+</resources>
