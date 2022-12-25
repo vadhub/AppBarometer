@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Baromètre</string>
+    <string name="permission_message_body">Autoriser l\'accès aux géodonnées</string>
+    <string name="permission_deny">Refuser</string>
+    <string name="permission_ok">Accordé</string>
+    <string name="permission_name">Autorisation requise</string>
+    <string name="version">Version:</string>
+    <string name="share">à partager entre amis</string>
+    <string name="copy">texte copié</string>
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
+    <string name="indicateInternet">l\'Internet</string>
+    <string name="indicateSensor">Capteur</string>
+    <string name="network_connection">connexion réseau non disponible</string>
+</resources>
