@@ -19,6 +19,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     private boolean isActive = false;
 
     private void checkPermission() {
-        if ((ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
         } else {
@@ -105,13 +106,13 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         saveState = new SaveState(this);
         unitPressure = new UnitPressure();
 
-        mBarText = (TextView) findViewById(R.id.mBarText);
+        mBarText = findViewById(R.id.mBarText);
 
-        imageViewArrow = (ImageView) findViewById(R.id.imageViewArrow);
-        imageViewGauge = (ImageView) findViewById(R.id.imageView);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        imageViewArrow = findViewById(R.id.imageViewArrow);
+        imageViewGauge = findViewById(R.id.imageView);
+        progressBar = findViewById(R.id.progressBar);
 
-        TextView textViewIndicator = (TextView) findViewById(R.id.textViewIndicator);
+        TextView textViewIndicator = findViewById(R.id.textViewIndicator);
 
         //update data arrow and gauge
         activeGauge(imageViewArrow, true);
@@ -125,7 +126,9 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
+
             checkPermission();
+
             textViewIndicator.setText(getResources().getText(R.string.indicateInternet));
         }
 
