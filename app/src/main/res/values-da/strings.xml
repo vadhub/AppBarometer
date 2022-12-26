@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Barometer</string>
+    <string name="permission_message_body">Tillad adgang til geodata</string>
+    <string name="permission_deny">Nægte</string>
+    <string name="permission_ok">Indrømmet</string>
+    <string name="permission_name">Tilladelse påkrævet</string>
+    <string name="version">Version:</string>
+    <string name="share">at dele med venner</string>
+    <string name="copy">tekst kopieret</string>
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
+    <string name="indicateInternet">Internettet</string>
+    <string name="indicateSensor">Sensor</string>
+    <string name="network_connection">netværksforbindelse ikke tilgængelig</string>
+</resources>

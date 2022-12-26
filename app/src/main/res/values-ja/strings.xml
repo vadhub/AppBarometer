@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">バロメーター</string>
+    <string name="permission_message_body">地理データへのアクセスを許可する</string>
+    <string name="permission_deny">拒否</string>
+    <string name="permission_ok">承諾する</string>
+    <string name="permission_name">許可が必要</string>
+    <string name="version">バージョン：</string>
+    <string name="share">友達と共有する</string>
+    <string name="copy">テキストをコピーしました</string>
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
+    <string name="indicateInternet">インターネット</string>
+    <string name="indicateSensor">センサー</string>
+    <string name="network_connection">ネットワーク接続が利用できません</string>
+</resources>
