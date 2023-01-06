@@ -13,4 +13,5 @@
     <string name="indicateInternet">إنترنت</string>
     <string name="indicateSensor">المستشعر</string>
     <string name="network_connection">اتصال الشبكة غير متوفر</string>
+    <string name="gps_not_available">GPS غير متوفر</string>
 </resources>

@@ -13,4 +13,5 @@
     <string name="indicateInternet">Internet</string>
     <string name="indicateSensor">Sensor</string>
     <string name="network_connection">Netzwerkverbindung nicht verfügbar</string>
+    <string name="gps_not_available">GPS nicht verfügbar</string>
 </resources>

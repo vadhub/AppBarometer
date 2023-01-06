@@ -23,7 +23,6 @@ public class MainActivityTest {
 
     @Before
     public void setUp() {
-
         ActivityScenario.launch(MainActivity.class);
     }
 

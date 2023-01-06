@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Barometer</string>
+    <string name="permission_message_body">Tillåt åtkomst till geodata</string>
+    <string name="permission_deny">Förneka</string>
+    <string name="permission_ok">Beviljas</string>
+    <string name="permission_name">Tillstånd krävs</string>
+    <string name="version">Version:</string>
+    <string name="share">att dela med vänner</string>
+    <string name="copy">text kopierad</string>
+    <string name="hpa">hPa</string>
+    <string name="mmHg">mmHg</string>
+    <string name="indicateInternet">Internet</string>
+    <string name="indicateSensor">Sensor</string>
+    <string name="network_connection">nätverksanslutning inte tillgänglig</string>
+    <string name="gps_not_available">GPS inte tillgänglig</string>
+</resources>
