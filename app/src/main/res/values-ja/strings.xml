@@ -13,4 +13,5 @@
     <string name="indicateInternet">インターネット</string>
     <string name="indicateSensor">センサー</string>
     <string name="network_connection">ネットワーク接続が利用できません</string>
+    <string name="gps_not_available">GPS を利用できません</string>
 </resources>

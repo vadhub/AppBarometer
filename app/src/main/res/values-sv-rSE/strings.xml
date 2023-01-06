@@ -13,4 +13,5 @@
     <string name="indicateInternet">Internet</string>
     <string name="indicateSensor">Sensor</string>
     <string name="network_connection">nätverksanslutning inte tillgänglig</string>
+    <string name="gps_not_available">GPS inte tillgänglig</string>
 </resources>

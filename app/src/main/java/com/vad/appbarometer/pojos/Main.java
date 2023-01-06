@@ -3,6 +3,8 @@ package com.vad.appbarometer.pojos;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.stream.IntStream;
+
 public class Main {
     @SerializedName("temp")
     @Expose

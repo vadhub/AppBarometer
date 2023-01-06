@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -19,7 +20,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.vad.appbarometer.R;
 import com.vad.appbarometer.screens.aboutapp.AboutAppActivity;
@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
 
     private SaveState saveState;
     private PressurePresenter presenter;
+
+    private FusedLocationProviderClient fusedLocationClient;
 
     private Sensor mPressure;
     private SensorManager mSensorManage;
@@ -122,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         if (mPressure == null) {
             try {
                 ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                presenter = new PressurePresenter(this, applicationInfo.metaData.getString("keyValue"));
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                presenter = new PressurePresenter(this, fusedLocationClient, applicationInfo.metaData.getString("keyValue"));
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -211,9 +214,8 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     }
 
     @Override
-    public GoogleApiClient getGoogleApiClient() {
-        return new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API).build();
+    public Activity getActivity() {
+        return this;
     }
 
     @Override
