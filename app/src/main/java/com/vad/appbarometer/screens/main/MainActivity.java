@@ -1,5 +1,4 @@
 
-
 package com.vad.appbarometer.screens.main;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,7 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +41,7 @@ import com.vad.appbarometer.utils.animation.AnimationSets;
 import com.vad.appbarometer.utils.math.MathSets;
 import com.vad.appbarometer.utils.requestcodes.RequestCodes;
 import com.vad.appbarometer.utils.savestateunit.SaveState;
-import com.yandex.mobile.ads.banner.AdSize;
+import com.yandex.mobile.ads.banner.BannerAdSize;
 import com.yandex.mobile.ads.banner.BannerAdView;
 import com.yandex.mobile.ads.common.AdRequest;
 
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     private ImageView imageViewArrow;
     private ImageView imageViewGauge;
     private ProgressBar progressBar;
+
+    private BannerAdView mBanner;
 
     private int isHg = 0;
     private static float pressure = 0;
@@ -97,9 +99,9 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         isDarkTheme = new ConfigurationCheck().checkDarkTheme(this);
         typeImage = new TypeImage();
 
-        BannerAdView mBanner = (BannerAdView) findViewById(R.id.adView);
+        mBanner = (BannerAdView) findViewById(R.id.adView);
         mBanner.setAdUnitId("R-M-1980164-1");
-        mBanner.setAdSize(AdSize.stickySize(AdSize.FULL_SCREEN.getWidth()));
+        mBanner.setAdSize(getAdSize());
         AdRequest adRequest = new AdRequest.Builder().build();
         mBanner.loadAd(adRequest);
 
@@ -136,6 +138,19 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         }
 
         isHg = saveState.getStatePres();
+    }
+
+    private BannerAdSize getAdSize() {
+        final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        // Calculate the width of the ad, taking into account the padding in the ad container.
+        int adWidthPixels = mBanner.getWidth();
+        if (adWidthPixels == 0) {
+            // If the ad hasn't been laid out, default to the full screen width
+            adWidthPixels = displayMetrics.widthPixels;
+        }
+        final int adWidth = Math.round(adWidthPixels / displayMetrics.density);
+
+        return BannerAdSize.stickySize(this, adWidth);
     }
 
     private void visionPressure(float pres, String changMBar) {
