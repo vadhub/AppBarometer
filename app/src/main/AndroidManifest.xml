@@ -38,6 +38,10 @@
         <meta-data
             android:name = "keyValue"
             android:value = "${KEY}"/>
+
+        <meta-data
+            android:name = "keyValueReserve"
+            android:value = "${KEY_2}"/>
     </application>
 
 </manifest>

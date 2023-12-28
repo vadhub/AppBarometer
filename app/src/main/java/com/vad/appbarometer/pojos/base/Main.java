@@ -1,4 +1,4 @@
-package com.vad.appbarometer.pojos;
+package com.vad.appbarometer.pojos.base;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

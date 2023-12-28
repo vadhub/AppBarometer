@@ -1,6 +1,6 @@
 package com.vad.appbarometer.retrofitzone;
 
-import com.vad.appbarometer.pojos.WeatherPojo;
+import com.vad.appbarometer.pojos.base.WeatherPojo;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

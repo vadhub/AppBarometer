@@ -7,6 +7,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,8 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.R;
-import com.vad.appbarometer.pojos.WeatherPojo;
+import com.vad.appbarometer.pojos.base.WeatherPojo;
+import com.vad.appbarometer.pojos.reserve.PressurePojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 
 import retrofit2.Call;
@@ -33,22 +35,26 @@ import retrofit2.Response;
 public class PressurePresenter {
 
     private final PressureListener view;
-    private final String key;
     private final FusedLocationProviderClient fusedLocationClient;
 
-    public PressurePresenter(PressureListener view, FusedLocationProviderClient fusedLocationClient, String key) {
+    public PressurePresenter(PressureListener view, FusedLocationProviderClient fusedLocationClient) {
         this.view = view;
         this.fusedLocationClient = fusedLocationClient;
-        this.key = key;
     }
 
     public void requestPressure(float lat, float lon) {
 
         if (view.isDataFromInternet()) {
-            RetrofitClient.getInstance().getJsonApi().getData(lat, lon, key).enqueue(new Callback<WeatherPojo>() {
+            RetrofitClient.getBaseInstance(false).getJsonApi().getData(lat, lon, view.getKey(false)).enqueue(new Callback<WeatherPojo>() {
                         @Override
                         public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
-                            view.setPressure(response.body().getMain().getPressure());
+                            if (response.code() == 200) {
+                                Log.d("Presenter", "base");
+                                view.setPressure(response.body().getMain().getPressure());
+                            } else {
+                                Log.d("Presenter", "reserve");
+                                reserveService(lat, lon);
+                            }
                         }
 
                         @Override
@@ -59,6 +65,22 @@ public class PressurePresenter {
         } else {
             view.showError(view.getActivity().getString(R.string.network_connection));
         }
+    }
+
+    public void reserveService(float lat, float lon) {
+        RetrofitClient.getBaseInstance(true).getReserveApi().getData(view.getKey(true), lat+","+lon).enqueue(new Callback<PressurePojo>() {
+            @Override
+            public void onResponse(Call<PressurePojo> call, Response<PressurePojo> response) {
+                if (response.isSuccessful()) {
+                    view.setPressure((float) response.body().getCurrent().getPressureMb());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PressurePojo> call, Throwable t) {
+                view.showError(t.getMessage());
+            }
+        });
     }
 
     public void displayLocationSettingsRequest() {
