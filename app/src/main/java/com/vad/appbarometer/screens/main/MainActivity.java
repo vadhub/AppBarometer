@@ -289,9 +289,6 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (presenter != null) {
-            presenter.disposableDispose();
-        }
         mSensorManage.unregisterListener(this);
     }
 }

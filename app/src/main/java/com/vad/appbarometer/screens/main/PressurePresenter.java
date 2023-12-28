@@ -1,6 +1,5 @@
 package com.vad.appbarometer.screens.main;
 
-
 import static com.vad.appbarometer.utils.requestcodes.RequestCodes.REQUEST_CHECK_SETTINGS;
 
 import android.Manifest;
@@ -24,17 +23,16 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.R;
+import com.vad.appbarometer.pojos.WeatherPojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PressurePresenter {
 
     private final PressureListener view;
-    private final CompositeDisposable compositeDisposable;
     private final String key;
     private final FusedLocationProviderClient fusedLocationClient;
 
@@ -42,24 +40,22 @@ public class PressurePresenter {
         this.view = view;
         this.fusedLocationClient = fusedLocationClient;
         this.key = key;
-        compositeDisposable = new CompositeDisposable();
     }
 
     public void requestPressure(float lat, float lon) {
 
         if (view.isDataFromInternet()) {
-            Disposable disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, key)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            weatherPojo -> {
-                                view.setPressure(weatherPojo.getMain().getPressure());
-                            },
-                            throwable -> {
-                                view.showError(throwable.getMessage());
-                            });
+            RetrofitClient.getInstance().getJsonApi().getData(lat, lon, key).enqueue(new Callback<WeatherPojo>() {
+                        @Override
+                        public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
+                            view.setPressure(response.body().getMain().getPressure());
+                        }
 
-            compositeDisposable.add(disposable);
+                        @Override
+                        public void onFailure(Call<WeatherPojo> call, Throwable t) {
+                            view.showError(t.getMessage());
+                        }
+                    });
         } else {
             view.showError(view.getActivity().getString(R.string.network_connection));
         }
@@ -123,10 +119,5 @@ public class PressurePresenter {
         });
 
     }
-
-    public void disposableDispose() {
-        compositeDisposable.dispose();
-    }
-
 
 }
