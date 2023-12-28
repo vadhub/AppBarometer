@@ -1,6 +1,5 @@
 package com.vad.appbarometer.screens.main;
 
-
 import static com.vad.appbarometer.utils.requestcodes.RequestCodes.REQUEST_CHECK_SETTINGS;
 
 import android.Manifest;
@@ -8,6 +7,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,45 +24,63 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.vad.appbarometer.R;
+import com.vad.appbarometer.pojos.base.WeatherPojo;
+import com.vad.appbarometer.pojos.reserve.PressurePojo;
 import com.vad.appbarometer.retrofitzone.RetrofitClient;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PressurePresenter {
 
     private final PressureListener view;
-    private final CompositeDisposable compositeDisposable;
-    private final String key;
     private final FusedLocationProviderClient fusedLocationClient;
 
-    public PressurePresenter(PressureListener view, FusedLocationProviderClient fusedLocationClient, String key) {
+    public PressurePresenter(PressureListener view, FusedLocationProviderClient fusedLocationClient) {
         this.view = view;
         this.fusedLocationClient = fusedLocationClient;
-        this.key = key;
-        compositeDisposable = new CompositeDisposable();
     }
 
     public void requestPressure(float lat, float lon) {
 
         if (view.isDataFromInternet()) {
-            Disposable disposable = RetrofitClient.getInstance().getJsonApi().getData(lat, lon, key)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            weatherPojo -> {
-                                view.setPressure(weatherPojo.getMain().getPressure());
-                            },
-                            throwable -> {
-                                view.showError(throwable.getMessage());
-                            });
+            RetrofitClient.getBaseInstance(false).getJsonApi().getData(lat, lon, view.getKey(false)).enqueue(new Callback<WeatherPojo>() {
+                        @Override
+                        public void onResponse(Call<WeatherPojo> call, Response<WeatherPojo> response) {
+                            if (response.code() == 200) {
+                                Log.d("Presenter", "base");
+                                view.setPressure(response.body().getMain().getPressure());
+                            } else {
+                                Log.d("Presenter", "reserve");
+                                reserveService(lat, lon);
+                            }
+                        }
 
-            compositeDisposable.add(disposable);
+                        @Override
+                        public void onFailure(Call<WeatherPojo> call, Throwable t) {
+                            view.showError(t.getMessage());
+                        }
+                    });
         } else {
             view.showError(view.getActivity().getString(R.string.network_connection));
         }
+    }
+
+    public void reserveService(float lat, float lon) {
+        RetrofitClient.getBaseInstance(true).getReserveApi().getData(view.getKey(true), lat+","+lon).enqueue(new Callback<PressurePojo>() {
+            @Override
+            public void onResponse(Call<PressurePojo> call, Response<PressurePojo> response) {
+                if (response.isSuccessful()) {
+                    view.setPressure((float) response.body().getCurrent().getPressureMb());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PressurePojo> call, Throwable t) {
+                view.showError(t.getMessage());
+            }
+        });
     }
 
     public void displayLocationSettingsRequest() {
@@ -123,10 +141,5 @@ public class PressurePresenter {
         });
 
     }
-
-    public void disposableDispose() {
-        compositeDisposable.dispose();
-    }
-
 
 }

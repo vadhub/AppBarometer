@@ -1,9 +1,8 @@
-package com.vad.appbarometer.pojos;
+package com.vad.appbarometer.pojos.base;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
+import com.vad.appbarometer.pojos.base.Main;
 
 public class WeatherPojo {
 

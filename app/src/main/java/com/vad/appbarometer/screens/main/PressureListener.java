@@ -11,4 +11,7 @@ public interface PressureListener {
     boolean isDataFromInternet();
 
     Activity getActivity();
+
+    /** if true get reserve key **/
+    String getKey(boolean reserve);
 }

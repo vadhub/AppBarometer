@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
 
     private boolean isActive = false;
 
+    private ApplicationInfo applicationInfo;
+
     private void checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, RequestCodes.REQUEST_CODE_PERMISSION_OVERLAY_PERMISSION);
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         mBanner.loadAd(adRequest);
 
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressure = null;//mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
         unitPressure = new UnitPressure();
 
@@ -125,9 +127,9 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         textViewIndicator.setText(getResources().getText(R.string.indicateSensor));
         if (mPressure == null) {
             try {
-                ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+                applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-                presenter = new PressurePresenter(this, fusedLocationClient, applicationInfo.metaData.getString("keyValue"));
+                presenter = new PressurePresenter(this, fusedLocationClient);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -234,6 +236,17 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     }
 
     @Override
+    public String getKey(boolean reserve) {
+
+        String key = applicationInfo.metaData.getString("keyValue");
+
+        if (reserve) {
+            key = applicationInfo.metaData.getString("keyValueReserve");
+        }
+        return key;
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         pressure = sensorEvent.values[0];
         setGauge(saveState.getStatePres(), pressure);
@@ -289,9 +302,6 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (presenter != null) {
-            presenter.disposableDispose();
-        }
         mSensorManage.unregisterListener(this);
     }
 }
