@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
         mBanner.loadAd(adRequest);
 
         mSensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mPressure = null;//mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        mPressure = mSensorManage.getDefaultSensor(Sensor.TYPE_PRESSURE);
         saveState = new SaveState(this);
         unitPressure = new UnitPressure();
 
