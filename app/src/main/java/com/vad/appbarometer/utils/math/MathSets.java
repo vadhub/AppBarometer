@@ -14,5 +14,4 @@ public class MathSets {
         return (float) (gPa / 1.334);
     }
 
-
 }

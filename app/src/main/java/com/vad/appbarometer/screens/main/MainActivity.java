@@ -21,6 +21,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -198,16 +199,37 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     }
 
     private void setGauge(int type, float pressure) {
+        int mbDay;
+        int mbDark;
+
+        int hpDay;
+        int hpDark;
+
+        if (pressure < 960) {
+            mbDay = R.drawable.mb_600_680;
+            mbDark = R.drawable.mb_600_680_night;
+
+            hpDay = R.drawable.hp_day_840_920;
+            hpDark = R.drawable.hp_night_840_920;
+        } else {
+            mbDay = R.drawable.gaugemmhg;
+            mbDark = R.drawable.gaugemmhgdark;
+
+            hpDay = R.drawable.gaugehgp;
+            hpDark = R.drawable.gaugehgpdark;
+        }
+
         unitPressure.setUnit(type,
                 () -> {
                     //hgp
                     visionPressure(pressure, "hPa");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugehgpdark, R.drawable.gaugehgp);
+                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, hpDark, hpDay);
                 },
                 () -> {
                     //mmg
                     visionPressure(MathSets.convertToMmHg(pressure), "mmHg");
-                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, R.drawable.gaugemmhgdark, R.drawable.gaugemmhg);
+                    Log.d("ssss", mbDay+"");
+                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, mbDark, mbDay);
                 });
     }
 
