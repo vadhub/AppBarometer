@@ -8,7 +8,7 @@
     <string name="version">संस्करण:</string>
     <string name="share">दोस्तों के साथ साझा करने के लिए</string>
     <string name="copy">पाठ की प्रतिलिपि बनाई गई</string>
-    <string name="hpa">hPa</string>
+    <string name="hpa">hPa (mBar)</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateInternet">इंटरनेट</string>
     <string name="indicateSensor">सेंसर</string>

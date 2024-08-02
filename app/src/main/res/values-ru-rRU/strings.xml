@@ -11,7 +11,7 @@
     <string name="indicateInternet">Интернет</string>
     <string name="indicateSensor">Датчик</string>
 
-    <string name="hpa">hPa</string>
+    <string name="hpa">hPa (mBar)</string>
     <string name="mmHg">mmHg</string>
     <string name="network_connection">сетевое соединение недоступно</string>
     <string name="gps_not_available">" GPS недоступен"</string>

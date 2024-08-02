@@ -8,7 +8,7 @@
     <string name="version">Version:</string>
     <string name="share">à partager entre amis</string>
     <string name="copy">texte copié</string>
-    <string name="hpa">hPa</string>
+    <string name="hpa">hPa (mBar)</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateInternet">l\'Internet</string>
     <string name="indicateSensor">Capteur</string>

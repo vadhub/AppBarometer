@@ -8,7 +8,7 @@
     <string name="share">to share with friends</string>
     <string name="copy">text copied</string>
 
-    <string name="hpa">hPa</string>
+    <string name="hpa">hPa (mBar)</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateInternet">Internet</string>
     <string name="indicateSensor">Sensor</string>

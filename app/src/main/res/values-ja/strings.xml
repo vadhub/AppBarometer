@@ -8,7 +8,7 @@
     <string name="version">バージョン：</string>
     <string name="share">友達と共有する</string>
     <string name="copy">テキストをコピーしました</string>
-    <string name="hpa">hPa</string>
+    <string name="hpa">hPa (mBar)</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateInternet">インターネット</string>
     <string name="indicateSensor">センサー</string>

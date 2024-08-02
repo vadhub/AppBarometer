@@ -9,7 +9,7 @@
     <string name="share">para compartilhar com amigos</string>
     <string name="copy">texto copiado</string>
 
-    <string name="hpa">hPa</string>
+    <string name="hpa">hPa (mBar)</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateSensor">Sensor</string>
     <string name="indicateInternet">Internet</string>
