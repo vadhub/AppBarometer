@@ -8,7 +8,7 @@
     <string name="version">Version:</string>
     <string name="share">att dela med vänner</string>
     <string name="copy">text kopierad</string>
-    <string name="hpa">hPa (mBar)</string>
+    <string name="hpa">hPa</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateInternet">Internet</string>
     <string name="indicateSensor">Sensor</string>

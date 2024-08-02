@@ -8,11 +8,12 @@
     <string name="share">to share with friends</string>
     <string name="copy">text copied</string>
 
-    <string name="hpa">hPa (mBar)</string>
+    <string name="hpa">hPa</string>
     <string name="mmHg">mmHg</string>
     <string name="indicateInternet">Internet</string>
     <string name="indicateSensor">Sensor</string>
     <string name="network_connection">network connection not available</string>
     <string name="gps_not_available">GPS not available</string>
+    <string name="mbar" translatable="false">mBar</string>
 
 </resources>

@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
 
     private BannerAdView mBanner;
 
-    private int isHg = 0;
+    private int typeUnitPressure = 0;
     private static float pressure = 0;
 
     private SaveState saveState;
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
             textViewIndicator.setText(getResources().getText(R.string.indicateInternet));
         }
 
-        isHg = saveState.getStatePres();
+        typeUnitPressure = saveState.getStatePres();
     }
 
     private BannerAdSize getAdSize() {
@@ -228,8 +228,12 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
                 () -> {
                     //mmg
                     visionPressure(MathSets.convertToMmHg(pressure), "mmHg");
-                    Log.d("ssss", mbDay+"");
                     typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, mbDark, mbDay);
+                },
+                () -> {
+                    //mBar
+                    visionPressure(pressure, "mBar");
+                    typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, hpDark, hpDay);
                 });
     }
 
@@ -296,14 +300,17 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
                 startAboutActivity();
                 break;
             case R.id.mmbar:
-                isHg = 1;
+                typeUnitPressure = UnitPressure.mmHG;
                 break;
             case R.id.hpa:
-                isHg = 0;
+                typeUnitPressure = UnitPressure.hPA;
+                break;
+            case R.id.mbar:
+                typeUnitPressure = UnitPressure.mBAR;
                 break;
         }
 
-        setGauge(isHg, pressure);
+        setGauge(typeUnitPressure, pressure);
 
         return true;
     }
@@ -317,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
     @Override
     protected void onPause() {
         super.onPause();
-        saveState.saveStatePres(isHg);
+        saveState.saveStatePres(typeUnitPressure);
         mSensorManage.unregisterListener(this);
     }
 

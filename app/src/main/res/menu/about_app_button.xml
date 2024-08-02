@@ -21,4 +21,10 @@
         app:showAsAction="never">
     </item>
 
+    <item
+        android:id="@+id/mbar"
+        android:title="@string/mbar"
+        app:showAsAction="never">
+    </item>
+
 </menu>

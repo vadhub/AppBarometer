@@ -2,11 +2,15 @@ package com.vad.appbarometer.utils;
 
 public class UnitPressure {
 
-    public void setUnit(int type, Runnable hgp, Runnable mmHg) {
-        if (type == 0) {
-            hgp.run();
-        } else {
-            mmHg.run();
+    public final static int hPA = 0;
+    public final static int mmHG = 1;
+    public final static int mBAR = 2;
+
+    public void setUnit(int type, Runnable hgp, Runnable mmHg, Runnable mBar) {
+        switch (type) {
+            case hPA -> hgp.run();
+            case mmHG -> mmHg.run();
+            case mBAR -> mBar.run();
         }
     }
 }
