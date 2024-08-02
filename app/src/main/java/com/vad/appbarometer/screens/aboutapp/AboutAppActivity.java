@@ -24,6 +24,7 @@ public class AboutAppActivity extends AppCompatActivity {
     private TextView textTweeter;
     private TextView textShare;
     private TextView textViewEmail;
+    private TextView textViewGithub;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class AboutAppActivity extends AppCompatActivity {
         textTweeter = (TextView) findViewById(R.id.textViewTweeter);
         textShare = (TextView) findViewById(R.id.textViewShare);
         textViewEmail = (TextView) findViewById(R.id.textViewEmail);
+        textViewGithub = (TextView) findViewById(R.id.textViewGithub);
 
         textViewEmail.setText("gabderahmanov99@gmail.com");
         textViewEmail.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_alternate_email_24, 0, 0, 0);
@@ -55,6 +57,13 @@ public class AboutAppActivity extends AppCompatActivity {
 
         textShare.setText(R.string.share);
         textShare.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_share_24, 0, 0, 0);
+
+        textViewGithub.setText("GitHub");
+        textViewGithub.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icons8_github, 0, 0, 0);
+        textViewGithub.setOnClickListener(v -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/vadhub/AppBarometer"));
+            startActivity(browserIntent);
+        });
 
     }
 

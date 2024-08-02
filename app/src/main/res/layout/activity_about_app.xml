@@ -80,6 +80,19 @@
                 android:layout_height="wrap_content"
                 android:onClick="onCopy"
                 android:text="Email" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"/>
+
+            <TextView
+                android:id="@+id/textViewGithub"
+                style="@style/TextViewAboutActivity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="GitHub" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
