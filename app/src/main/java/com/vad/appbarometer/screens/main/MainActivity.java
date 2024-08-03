@@ -231,8 +231,8 @@ public class MainActivity extends AppCompatActivity implements PressureListener,
                     typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, mbDark, mbDay);
                 },
                 () -> {
-                    //mBar
-                    visionPressure(pressure, "mBar");
+                    //mbar
+                    visionPressure(pressure, "mbar");
                     typeImage.setPressureImageType(isDarkTheme, this, imageViewGauge, hpDark, hpDay);
                 });
     }

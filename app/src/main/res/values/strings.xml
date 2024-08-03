@@ -14,6 +14,6 @@
     <string name="indicateSensor">Sensor</string>
     <string name="network_connection">network connection not available</string>
     <string name="gps_not_available">GPS not available</string>
-    <string name="mbar" translatable="false">mBar</string>
+    <string name="mbar" translatable="false">mbar</string>
 
 </resources>
